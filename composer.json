@@ -1,0 +1,35 @@
+{
+    "name": "OTGS/OurSystem/Disable_Plugins",
+    "description": "MU-Plugin to disable some plugins under certain conditions",
+    "license": "GPL-2.0-only",
+    "homepage": "https://git.onthegosystems.com:10022/website-support/otgs-disable-plugins.git",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "Igor Gergel",
+            "email": "igor.g@onthegosystems.com",
+            "homepage": "https://wpml.org"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "roave/security-advisories": "dev-master",
+        "sebastian/phpcpd": "^3.0",
+        "10up/wp_mock": "~0.2.0",
+        "otgs/unit-tests-framework": "~1.2.0",
+        "phpunit/phpunit": "~5.7",
+        "squizlabs/php_codesniffer": "dev-master",
+        "phpcompatibility/php-compatibility": "dev-master",
+        "wp-coding-standards/wpcs": "dev-master"
+    },
+    "autoload": {
+        "classmap": [
+            "includes"
+        ]
+    },
+    "autoload-dev": {
+        "classmap": [
+        ]
+    }
+}
