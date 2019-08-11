@@ -6,8 +6,6 @@ Disable Plugins allows to disable unneeded plugins on certain urls/ajax calls to
 
 This is an must-use plugin (mu-plugin) which shall reside in mu-plugins folder.
 
-Plugin is developed for internal use, mainly on wpml.org and toolset.com
-
 ## Usage
 
 Define filters in
