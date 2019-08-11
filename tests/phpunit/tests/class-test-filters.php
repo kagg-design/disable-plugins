@@ -2,17 +2,18 @@
 /**
  * Test_Filters class file
  *
- * @package OTGS\OurSystem\Disable_Plugins
+ * @package KAGG\Disable_Plugins
  */
 
-use OTGS\OurSystem\Disable_Plugins\Filters;
+use KAGG\KAGG_TestCase;
+use KAGG\Disable_Plugins\Filters;
 
 /**
  * Class Test_Filters
  *
  * @group filters
  */
-class Test_Filters extends OTGS_TestCase {
+class Test_Filters extends KAGG_TestCase {
 
 	/**
 	 * It gets plugin filters

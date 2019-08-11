@@ -3,7 +3,6 @@
     <description>A custom set of code standard rules to check for WordPress plugins.</description>
 
     <rule ref="WordPress" />
-    <!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/wiki/Customizable-sniff-properties -->
 
     <exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/tests/*</exclude-pattern>
@@ -13,5 +12,4 @@
     <exclude-pattern>*.twig</exclude-pattern>
     <exclude-pattern>*.css</exclude-pattern>
     <exclude-pattern>*.scss</exclude-pattern>
-
 </ruleset>

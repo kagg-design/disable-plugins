@@ -28,8 +28,10 @@ $autoloader_dir = WPML_PATH . '/vendor';
 $autoloader = $autoloader_dir . '/autoload.php';
 require_once $autoloader;
 
-require_once WPML_PATH . '/vendor/otgs/unit-tests-framework/phpunit/bootstrap.php';
-
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', WPML_PATH . '/../../' );
 }
+
+// Now call the bootstrap method of WP Mock.
+\WP_Mock::bootstrap();
+

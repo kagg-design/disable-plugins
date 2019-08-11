@@ -2,15 +2,15 @@
 /**
  * Main class file
  *
- * @package OTGS\OurSystem\Disable_Plugins
+ * @package KAGG\Disable_Plugins
  */
 
-namespace OTGS\OurSystem\Disable_Plugins;
+namespace KAGG\Disable_Plugins;
 
 /**
  * Class Main
  *
- * @package OTGS\OurSystem\Disable_Plugins
+ * @package KAGG\Disable_Plugins
  */
 class Main {
 
@@ -19,7 +19,7 @@ class Main {
 	 *
 	 * @var string
 	 */
-	const CACHE_GROUP = 'otgs_oursystem_disable_plugins';
+	const CACHE_GROUP = 'kagg_disable_plugins';
 
 	/**
 	 * Instance of class Filters, providing plugin filters
@@ -233,14 +233,14 @@ class Main {
 	private function is_frontend_ajax() {
 		$ref = '';
 
-		// @phpcs:disable WordPress.Security.NonceVerification.Recommended
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_REQUEST['_wp_http_referer'] ) ) {
 			$ref = filter_var( wp_unslash( $_REQUEST['_wp_http_referer'] ), FILTER_SANITIZE_STRING );
 		}
 		if ( ! $ref && isset( $_SERVER['HTTP_REFERER'] ) ) {
 			$ref = filter_var( wp_unslash( $_SERVER['HTTP_REFERER'] ), FILTER_SANITIZE_STRING );
 		}
-		// @phpcs:enable WordPress.Security.NonceVerification.Recommended
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		if ( ! isset( $_SERVER['SCRIPT_FILENAME'] ) ) {
 			return false;

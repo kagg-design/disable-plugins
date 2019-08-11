@@ -2,15 +2,16 @@
 /**
  * Test_Main class file
  *
- * @package OTGS\OurSystem\Disable_Plugins
+ * @package KAGG\Disable_Plugins
  */
 
-use OTGS\OurSystem\Disable_Plugins\Main;
+use KAGG\KAGG_TestCase;
+use KAGG\Disable_Plugins\Main;
 
 /**
  * Class Test_Main
  */
-class Test_Main extends OTGS_TestCase {
+class Test_Main extends KAGG_TestCase {
 
 	/**
 	 * It inits
@@ -32,7 +33,7 @@ class Test_Main extends OTGS_TestCase {
 	 * @test
 	 */
 	public function it_adds_and_removes_hooks() {
-		$filters_instance = \Mockery::mock( 'OTGS\OurSystem\Disable_Plugins\Filters' );
+		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
 		$subject          = new Main( $filters_instance );
 
 		WP_Mock::expectFilterAdded( 'option_active_plugins', [ $subject, 'disable' ], PHP_INT_MIN );
@@ -58,7 +59,7 @@ class Test_Main extends OTGS_TestCase {
 	 * @test
 	 */
 	public function it_removes_plugin_filters() {
-		$filters_instance = \Mockery::mock( 'OTGS\OurSystem\Disable_Plugins\Filters' );
+		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
 		$subject          = new Main( $filters_instance );
 
 		WP_Mock::expectFilterNotAdded( 'option_active_plugins', [ $subject, 'disable' ], PHP_INT_MIN );
@@ -72,7 +73,7 @@ class Test_Main extends OTGS_TestCase {
 	 * @test
 	 */
 	public function it_disables_plugins_saved_in_cache() {
-		$filters_instance = \Mockery::mock( 'OTGS\OurSystem\Disable_Plugins\Filters' );
+		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
 		$subject          = new Main( $filters_instance );
 
 		$cached_plugins = [ 'sitepress-multilingual-cms/sitepress.php' ];
@@ -90,7 +91,7 @@ class Test_Main extends OTGS_TestCase {
 	 * @test
 	 */
 	public function it_does_nothing_on_frontend_if_no_server_uri() {
-		$filters_instance = \Mockery::mock( 'OTGS\OurSystem\Disable_Plugins\Filters' );
+		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
 		$subject          = new Main( $filters_instance );
 
 		$plugins = [ 'sitepress-multilingual-cms/sitepress.php' ];
@@ -131,7 +132,7 @@ class Test_Main extends OTGS_TestCase {
 
 		\WP_Mock::passthruFunction( 'wp_unslash' );
 		\WP_Mock::passthruFunction( 'wp_parse_url' );
-		\WP_Mock::wpFunction(
+		\WP_Mock::userFunction(
 			'trailingslashit',
 			[
 				'return' => function ( $url ) {
@@ -140,7 +141,7 @@ class Test_Main extends OTGS_TestCase {
 			]
 		);
 
-		$filters_instance = \Mockery::mock( 'OTGS\OurSystem\Disable_Plugins\Filters' );
+		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
 		$filters_instance->shouldReceive( 'get_frontend_filters' )->andReturn( $filters );
 
 		$subject = new Main( $filters_instance );
@@ -240,7 +241,7 @@ class Test_Main extends OTGS_TestCase {
 	 * @test
 	 */
 	public function it_does_nothing_on_backend_if_no_server_uri() {
-		$filters_instance = \Mockery::mock( 'OTGS\OurSystem\Disable_Plugins\Filters' );
+		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
 		$subject          = new Main( $filters_instance );
 
 		$plugins = [ 'sitepress-multilingual-cms/sitepress.php' ];
@@ -281,7 +282,7 @@ class Test_Main extends OTGS_TestCase {
 
 		\WP_Mock::passthruFunction( 'wp_unslash' );
 
-		$filters_instance = \Mockery::mock( 'OTGS\OurSystem\Disable_Plugins\Filters' );
+		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
 		$filters_instance->shouldReceive( 'get_backend_filters' )->andReturn( $filters );
 
 		$subject = new Main( $filters_instance );
@@ -395,7 +396,7 @@ class Test_Main extends OTGS_TestCase {
 			],
 		];
 
-		$filters_instance = \Mockery::mock( 'OTGS\OurSystem\Disable_Plugins\Filters' );
+		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
 		$filters_instance->shouldReceive( 'get_ajax_filters' )->andReturn( $filters );
 
 		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
@@ -443,7 +444,7 @@ class Test_Main extends OTGS_TestCase {
 			],
 		];
 
-		$filters_instance = \Mockery::mock( 'OTGS\OurSystem\Disable_Plugins\Filters' );
+		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
 		$filters_instance->shouldReceive( 'get_ajax_filters' )->andReturn( $filters );
 
 		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
@@ -474,7 +475,7 @@ class Test_Main extends OTGS_TestCase {
 	public function it_disables_plugins_on_ajax( $plugins, $filters, $expected ) {
 		$referer = 'http://www.example.com/some-page/';
 
-		$filters_instance = \Mockery::mock( 'OTGS\OurSystem\Disable_Plugins\Filters' );
+		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
 		$filters_instance->shouldReceive( 'get_ajax_filters' )->andReturn( $filters );
 
 		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );

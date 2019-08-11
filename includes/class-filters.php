@@ -2,15 +2,15 @@
 /**
  * Filters class file
  *
- * @package OTGS\OurSystem\Disable_Plugins
+ * @package KAGG\Disable_Plugins
  */
 
-namespace OTGS\OurSystem\Disable_Plugins;
+namespace KAGG\Disable_Plugins;
 
 /**
  * Class Filters
  *
- * @package OTGS\OurSystem\Disable_Plugins
+ * @package KAGG\Disable_Plugins
  */
 class Filters {
 

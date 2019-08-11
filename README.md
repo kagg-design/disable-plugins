@@ -11,7 +11,7 @@ Plugin is developed for internal use, mainly on wpml.org and toolset.com
 ## Usage
 
 Define filters in
-`wp-content/mu-plugins/filters.json`, using `wp-content/mu-plugins/otgs-disable-plugins/filters.sample.json` as a sample. 
+`wp-content/mu-plugins/filters.json`, using `wp-content/mu-plugins/disable-plugins/filters.sample.json` as a sample. 
 
 Filters to have the following structure
 
@@ -69,8 +69,8 @@ where `patterns` is an array of regular expressions to compare with page slug (f
 
 In `wp-content/mu-plugins` folder:
 ```
-git clone ssh://git@git.onthegosystems.com:10022/website-support/otgs-disable-plugins.git
-cd otgs-disable-plugins
+git clone https://github.com/kagg-design/disable-plugins
+cd disable-plugins
 composer install --no-dev
 cp disable-plugins.php ..
 ```
@@ -79,8 +79,8 @@ cp disable-plugins.php ..
 
 In `wp-content/mu-plugins` folder:
 ```
-git clone ssh://git@git.onthegosystems.com:10022/website-support/otgs-disable-plugins.git
-cd otgs-disable-plugins
+git clone https://github.com/kagg-design/disable-plugins
+cd disable-plugins
 composer install
 cp disable-plugins.php ..
 ```
