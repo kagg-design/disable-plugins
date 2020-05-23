@@ -2,7 +2,7 @@
 /**
  * Test_Main class file
  *
- * @package KAGG\Disable_Plugins
+ * @package kagg/disable_plugins
  */
 
 use KAGG\KAGG_TestCase;

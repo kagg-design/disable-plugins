@@ -10,7 +10,7 @@
  * Tested up to: 5.2
  * Requires PHP: 7.0
  *
- * @package KAGG\Disable_Plugins
+ * @package kagg/disable_plugins
  */
 
 namespace KAGG\Disable_Plugins;

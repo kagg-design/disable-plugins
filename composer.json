@@ -1,5 +1,5 @@
 {
-  "name": "KAGG/Disable_Plugins",
+  "name": "kagg/disable_plugins",
   "description": "MU-Plugin to disable some plugins under certain conditions",
   "license": "GPL-2.0-only",
   "homepage": "https://github.com/kagg-design/disable-plugins",

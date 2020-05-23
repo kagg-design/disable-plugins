@@ -2,7 +2,7 @@
 /**
  * Main class file
  *
- * @package KAGG\Disable_Plugins
+ * @package kagg/disable_plugins
  */
 
 namespace KAGG\Disable_Plugins;
@@ -10,7 +10,7 @@ namespace KAGG\Disable_Plugins;
 /**
  * Class Main
  *
- * @package KAGG\Disable_Plugins
+ * @package kagg/disable_plugins
  */
 class Main {
 

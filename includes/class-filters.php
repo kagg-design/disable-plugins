@@ -2,7 +2,7 @@
 /**
  * Filters class file
  *
- * @package KAGG\Disable_Plugins
+ * @package kagg/disable_plugins
  */
 
 namespace KAGG\Disable_Plugins;
@@ -10,7 +10,7 @@ namespace KAGG\Disable_Plugins;
 /**
  * Class Filters
  *
- * @package KAGG\Disable_Plugins
+ * @package kagg/disable_plugins
  */
 class Filters {
 

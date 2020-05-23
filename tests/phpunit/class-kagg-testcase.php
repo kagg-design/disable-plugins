@@ -2,7 +2,7 @@
 /**
  * KAGG_TestCase class file.
  *
- * @package KAGG\Disable_Plugins
+ * @package kagg/disable_plugins
  */
 
 namespace KAGG;
