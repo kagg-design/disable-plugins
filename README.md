@@ -1,15 +1,15 @@
 # WordPress Plugin Disable Plugins
 
-Disable Plugins allows to disable unneeded plugins on certain urls/ajax calls to improve site performance.
+Disable Plugins allows disabling unneeded plugins on certain urls/ajax calls to improve site performance.
 
 # Description
 
-This is an must-use plugin (mu-plugin) which shall reside in mu-plugins folder.
+This is a must-use plugin (mu-plugin) which shall reside in mu-plugins folder.
 
 ## Usage
 
 Define filters in
-`wp-content/mu-plugins/filters.json`, using `wp-content/mu-plugins/disable-plugins/filters.sample.json` as a sample. 
+`wp-content/mu-plugins/filters.json`, using `wp-content/mu-plugins/disable-plugins/filters.sample.json` as a sample.
 
 Filters to have the following structure
 
@@ -93,5 +93,4 @@ The WordPress Plugin Disable Plugins is licensed under the GPL v2 or later.
 
 > You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-A copy of the license is included in the root of the plugin’s directory. The file is named `LICENSE`.
-
+A copy of the license is in the root of the plugin’s directory. The file name is `LICENSE`.
