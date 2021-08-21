@@ -61,7 +61,7 @@ where `patterns` is an array of regular expressions to compare with page slug (f
 
 `disabled_plugins` can contain the list of plugins to disable.
 
-`enabled_plugins` can contain the list of plugins to leave enabled. Only these plugins will be enabled, all others will be disabled.
+`enabled_plugins` can contain the list of plugins to leave enabled.
 
 ## Installation
 

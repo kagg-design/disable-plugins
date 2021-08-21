@@ -193,7 +193,7 @@ class Main {
 		}
 
 		$disabled_plugins = [];
-		$enabled_plugins  = $plugins;
+		$enabled_plugins  = [];
 		$found            = false;
 
 		foreach ( $filters as $filter ) {
@@ -207,11 +207,11 @@ class Main {
 				}
 
 				if ( isset( $filter['disabled_plugins'] ) ) {
-					$disabled_plugins = $filter['disabled_plugins'];
+					$disabled_plugins[] = $filter['disabled_plugins'];
 				}
 
 				if ( isset( $filter['enabled_plugins'] ) ) {
-					$enabled_plugins = $filter['enabled_plugins'];
+					$enabled_plugins[] = $filter['enabled_plugins'];
 				}
 
 				$found = true;
@@ -223,8 +223,11 @@ class Main {
 			return $plugins;
 		}
 
-		$plugins = array_diff( $plugins, $disabled_plugins );
-		$plugins = array_intersect( $plugins, $enabled_plugins );
+		$disabled_plugins = array_merge( [], ...$disabled_plugins );
+		$enabled_plugins  = array_merge( [], ...$enabled_plugins );
+
+		$disabled_plugins = array_diff( $disabled_plugins, $enabled_plugins );
+		$plugins          = array_diff( $plugins, $disabled_plugins );
 
 		return array_unique( $plugins );
 	}
