@@ -164,7 +164,6 @@ class Main {
 	 * @return array
 	 */
 	private function disable_on_rest( $plugins ) {
-
 		return $plugins;
 	}
 
@@ -176,7 +175,6 @@ class Main {
 	 * @return array
 	 */
 	private function disable_on_cli( $plugins ) {
-
 		return $plugins;
 	}
 
@@ -204,16 +202,20 @@ class Main {
 			}
 
 			foreach ( $filter['patterns'] as $pattern ) {
-				if ( mb_ereg_match( $pattern, $current_pattern ) ) {
-					if ( isset( $filter['disabled_plugins'] ) ) {
-						$disabled_plugins = $filter['disabled_plugins'];
-					}
-					if ( isset( $filter['enabled_plugins'] ) ) {
-						$enabled_plugins = $filter['enabled_plugins'];
-					}
-					$found = true;
-					break;
+				if ( ! mb_ereg_match( $pattern, $current_pattern ) ) {
+					continue;
 				}
+
+				if ( isset( $filter['disabled_plugins'] ) ) {
+					$disabled_plugins = $filter['disabled_plugins'];
+				}
+
+				if ( isset( $filter['enabled_plugins'] ) ) {
+					$enabled_plugins = $filter['enabled_plugins'];
+				}
+
+				$found = true;
+				break;
 			}
 		}
 
