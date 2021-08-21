@@ -7,6 +7,8 @@
 
 namespace KAGG\Disable_Plugins;
 
+use WP_Rewrite;
+
 /**
  * Class Main
  *
@@ -252,12 +254,50 @@ class Main {
 	}
 
 	/**
-	 * Check if it is a REST request
+	 * Checks if the current request is a WP REST API request.
+	 *
+	 * Case #1: After WP_REST_Request initialisation
+	 * Case #2: Support "plain" permalink settings
+	 * Case #3: It can happen that WP_Rewrite is not yet initialized,
+	 *          so do this (wp-settings.php)
+	 * Case #4: URL Path begins with wp-json/ (your REST prefix)
+	 *          Also supports WP installations in subfolders
 	 *
 	 * @return bool
+	 * @author matzeeable
 	 */
 	private function is_rest() {
-		return defined( 'REST_REQUEST' ) && REST_REQUEST;
+		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
+			return false;
+		}
+
+		// Case #1.
+		if ( defined( 'REST_REQUEST' ) && constant( 'REST_REQUEST' ) ) {
+			return true;
+		}
+
+		// Case #2.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$rest_route = isset( $_GET['rest_route'] ) ?
+			filter_input( INPUT_GET, 'rest_route', FILTER_SANITIZE_STRING ) :
+			'';
+
+		if ( 0 === strpos( trim( $rest_route, '\\/' ), rest_get_url_prefix() ) ) {
+			return true;
+		}
+
+		// Case #3.
+		global $wp_rewrite;
+		if ( null === $wp_rewrite ) {
+			// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$wp_rewrite = new WP_Rewrite();
+		}
+
+		// Case #4.
+		$current_url = wp_parse_url( add_query_arg( [] ), PHP_URL_PATH );
+		$rest_url    = wp_parse_url( trailingslashit( rest_url() ), PHP_URL_PATH );
+
+		return 0 === strpos( $current_url, $rest_url );
 	}
 
 	/**
