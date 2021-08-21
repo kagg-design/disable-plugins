@@ -15,7 +15,7 @@
 
 namespace KAGG\Disable_Plugins;
 
-define( 'KAGG_DISABLE_PLUGINS_PATH', dirname( __FILE__ ) . '/disable-plugins' );
+define( 'KAGG_DISABLE_PLUGINS_PATH', __DIR__ . '/disable-plugins' );
 
 /**
  * Init plugin class on plugin load.
@@ -23,5 +23,4 @@ define( 'KAGG_DISABLE_PLUGINS_PATH', dirname( __FILE__ ) . '/disable-plugins' );
 require_once KAGG_DISABLE_PLUGINS_PATH . '/vendor/autoload.php';
 
 $filters = new Filters();
-$plugin  = new Main( $filters );
-$plugin->init();
+( new Main( $filters ) )->init();

@@ -104,7 +104,7 @@ class Main {
 	 *
 	 * @param array $plugins Plugins.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
 	private function disable_on_frontend( $plugins ) {
 		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
@@ -122,7 +122,7 @@ class Main {
 	 *
 	 * @param array $plugins Plugins.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
 	private function disable_on_backend( $plugins ) {
 		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
@@ -143,7 +143,7 @@ class Main {
 	 */
 	private function disable_on_ajax( $plugins ) {
 		// @phpcs:disable WordPress.Security.NonceVerification.Missing
-		if ( ! $this->is_frontend_ajax() || ! isset( $_POST['action'] ) ) {
+		if ( ! isset( $_POST['action'] ) || ! $this->is_frontend_ajax() ) {
 			return $plugins;
 		}
 
@@ -247,12 +247,8 @@ class Main {
 		}
 		$script_filename = filter_var( wp_unslash( $_SERVER['SCRIPT_FILENAME'] ), FILTER_SANITIZE_STRING );
 
-		// If referer does not contain admin URL and we are using the admin-ajax.php endpoint, this is likely a frontend AJAX request.
-		if ( ( ( strpos( $ref, admin_url() ) === false ) && ( basename( $script_filename ) === 'admin-ajax.php' ) ) ) {
-			return true;
-		}
-
-		return false;
+		// If referer does not contain admin URL, and we are using the admin-ajax.php endpoint, this is likely a frontend AJAX request.
+		return ( strpos( $ref, admin_url() ) === false ) && ( basename( $script_filename ) === 'admin-ajax.php' );
 	}
 
 	/**

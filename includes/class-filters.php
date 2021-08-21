@@ -33,7 +33,7 @@ class Filters {
 	 *
 	 * @param string $filters_filename Name of the file containing plugin filters.
 	 */
-	public function __construct( string $filters_filename = '' ) {
+	public function __construct( $filters_filename = '' ) {
 		if ( $filters_filename ) {
 			$this->filters_filename = $filters_filename;
 		}
