@@ -52,10 +52,10 @@ class Main {
 	 * Add hooks
 	 */
 	public function add_hooks() {
-		add_filter( 'option_active_plugins', [ $this, 'disable' ], PHP_INT_MIN );
+		add_filter( 'option_active_plugins', [ $this, 'disable' ], - PHP_INT_MAX );
 
-		add_filter( 'option_hack_file', [ $this, 'remove_plugin_filters' ], PHP_INT_MIN );
-		add_action( 'plugins_loaded', [ $this, 'remove_plugin_filters' ], PHP_INT_MIN );
+		add_filter( 'option_hack_file', [ $this, 'remove_plugin_filters' ], - PHP_INT_MAX );
+		add_action( 'plugins_loaded', [ $this, 'remove_plugin_filters' ], - PHP_INT_MAX );
 	}
 
 	/**
@@ -98,7 +98,7 @@ class Main {
 	 * Remove plugin filters
 	 */
 	public function remove_plugin_filters() {
-		remove_filter( 'option_active_plugins', [ $this, 'disable' ], PHP_INT_MIN );
+		remove_filter( 'option_active_plugins', [ $this, 'disable' ], - PHP_INT_MAX );
 	}
 
 	/**
@@ -271,7 +271,7 @@ class Main {
 	 * @return bool
 	 * @author matzeeable
 	 */
-	private function is_rest() {
+	protected function is_rest() {
 		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
 			return false;
 		}

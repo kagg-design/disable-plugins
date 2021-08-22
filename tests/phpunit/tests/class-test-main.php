@@ -1,5 +1,19 @@
 <?php
 /**
+ * MainTest class file.
+ *
+ * @package kagg/disable_plugins
+ */
+
+// phpcs:disable Generic.Commenting.DocComment.MissingShort
+/** @noinspection PhpParamsInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+
+// phpcs:enable Generic.Commenting.DocComment.MissingShort
+
+use KAGG\Disable_Plugins\Filters;
+
+/**
  * Test_Main class file
  *
  * @package kagg/disable_plugins
@@ -14,15 +28,26 @@ use KAGG\Disable_Plugins\Main;
 class Test_Main extends KAGG_TestCase {
 
 	/**
+	 * Finalise test
+	 */
+	public function tearDown(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		unset( $_SERVER['REQUEST_URI'], $_REQUEST['_wp_http_referer'], $_SERVER['SCRIPT_FILENAME'] );
+
+		parent::tearDown();
+	}
+
+	/**
 	 * It inits
 	 *
 	 * @test
+	 * @noinspection PhpUndefinedMethodInspection
 	 */
 	public function it_inits() {
-		$subject = \Mockery::mock( Main::class )->makePartial();
+		$subject = Mockery::mock( Main::class )->makePartial();
 		$subject->shouldReceive( 'add_hooks' )->once();
 
-		\WP_Mock::userFunction( 'wp_cache_add_non_persistent_groups' )->once()->with( [ Main::CACHE_GROUP ] );
+		WP_Mock::userFunction( 'wp_cache_add_non_persistent_groups' )->once()->with( [ Main::CACHE_GROUP ] );
 
 		$subject->init();
 	}
@@ -33,21 +58,21 @@ class Test_Main extends KAGG_TestCase {
 	 * @test
 	 */
 	public function it_adds_and_removes_hooks() {
-		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
+		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
-		WP_Mock::expectFilterAdded( 'option_active_plugins', [ $subject, 'disable' ], PHP_INT_MIN );
-		WP_Mock::expectFilterAdded( 'option_hack_file', [ $subject, 'remove_plugin_filters' ], PHP_INT_MIN );
-		WP_Mock::expectActionAdded( 'plugins_loaded', [ $subject, 'remove_plugin_filters' ], PHP_INT_MIN );
+		WP_Mock::expectFilterAdded( 'option_active_plugins', [ $subject, 'disable' ], - PHP_INT_MAX );
+		WP_Mock::expectFilterAdded( 'option_hack_file', [ $subject, 'remove_plugin_filters' ], - PHP_INT_MAX );
+		WP_Mock::expectActionAdded( 'plugins_loaded', [ $subject, 'remove_plugin_filters' ], - PHP_INT_MAX );
 
 		$subject->add_hooks();
 
-		\WP_Mock::userFunction(
+		WP_Mock::userFunction(
 			'remove_filter',
-			array(
+			[
 				'times' => 1,
-				'args'  => [ 'option_active_plugins', [ $subject, 'disable' ], PHP_INT_MIN ],
-			)
+				'args'  => [ 'option_active_plugins', [ $subject, 'disable' ], - PHP_INT_MAX ],
+			]
 		);
 
 		$subject->remove_plugin_filters();
@@ -59,10 +84,10 @@ class Test_Main extends KAGG_TestCase {
 	 * @test
 	 */
 	public function it_removes_plugin_filters() {
-		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
+		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
-		WP_Mock::expectFilterNotAdded( 'option_active_plugins', [ $subject, 'disable' ], PHP_INT_MIN );
+		WP_Mock::expectFilterNotAdded( 'option_active_plugins', [ $subject, 'disable' ] );
 
 		$subject->remove_plugin_filters();
 	}
@@ -73,13 +98,13 @@ class Test_Main extends KAGG_TestCase {
 	 * @test
 	 */
 	public function it_disables_plugins_saved_in_cache() {
-		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
+		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
 		$cached_plugins = [ 'sitepress-multilingual-cms/sitepress.php' ];
 
-		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
-		\WP_Mock::userFunction( 'wp_cache_get' )->andReturn( $cached_plugins );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( $cached_plugins );
 
 		$plugins = [ 'wpml-string-translation/plugin.php' ];
 		$this->assertSame( $cached_plugins, $subject->disable( $plugins ) );
@@ -91,16 +116,16 @@ class Test_Main extends KAGG_TestCase {
 	 * @test
 	 */
 	public function it_does_nothing_on_frontend_if_no_server_uri() {
-		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
+		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
 		$plugins = [ 'sitepress-multilingual-cms/sitepress.php' ];
 
-		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
-		\WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
-		\WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
-		\WP_Mock::userFunction( 'is_admin' )->andReturn( false );
-		\WP_Mock::passthruFunction( 'wp_cache_set' );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
+		WP_Mock::userFunction( 'is_admin' )->andReturn( false );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
 
 		unset( $_SERVER['REQUEST_URI'] );
 
@@ -118,21 +143,21 @@ class Test_Main extends KAGG_TestCase {
 	 * @dataProvider        dp_it_disables_plugins_on_frontend
 	 */
 	public function it_disables_plugins_on_frontend( $plugins, $filters, $expected ) {
-		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
-		\WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
-		\WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
-		\WP_Mock::userFunction( 'is_admin' )->andReturn( false );
-		\WP_Mock::passthruFunction( 'wp_cache_set' );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
+		WP_Mock::userFunction( 'is_admin' )->andReturn( false );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
 
-		if ( isset( $filters[0]['patterns'] ) ) {
-			$_SERVER['REQUEST_URI'] = $filters[0]['patterns'][0];
+		if ( is_array( $filters ) && isset( $filters[ count( $filters ) - 1 ]['patterns'] ) ) {
+			$_SERVER['REQUEST_URI'] = $filters[ count( $filters ) - 1 ]['patterns'][0];
 		} else {
 			$_SERVER['REQUEST_URI'] = '/some_url';
 		}
 
-		\WP_Mock::passthruFunction( 'wp_unslash' );
-		\WP_Mock::passthruFunction( 'wp_parse_url' );
-		\WP_Mock::userFunction(
+		WP_Mock::passthruFunction( 'wp_unslash' );
+		WP_Mock::passthruFunction( 'wp_parse_url' );
+		WP_Mock::userFunction(
 			'trailingslashit',
 			[
 				'return' => function ( $url ) {
@@ -141,10 +166,12 @@ class Test_Main extends KAGG_TestCase {
 			]
 		);
 
-		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
+		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_frontend_filters' )->andReturn( $filters );
 
-		$subject = new Main( $filters_instance );
+		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
+			->shouldAllowMockingProtectedMethods();
+		$subject->shouldReceive( 'is_rest' )->andReturn( false );
 		$this->assertSame( $expected, $subject->disable( $plugins ) );
 	}
 
@@ -209,12 +236,20 @@ class Test_Main extends KAGG_TestCase {
 				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
 				[
 					[
+						'patterns'         => [ '.*' ],
+						'locations'        => [ 'frontend' ],
+						'disabled_plugins' => [
+							'sitepress-multilingual-cms/sitepress.php',
+							'wpml-string-translation/plugin.php',
+						],
+					],
+					[
 						'patterns'        => [ '/some_url4' ],
 						'locations'       => [ 'frontend' ],
-						'enabled_plugins' => [ 'sitepress-multilingual-cms/sitepress.php' ],
+						'enabled_plugins' => [ 'wpml-string-translation/plugin.php' ],
 					],
 				],
-				[ 0 => 'sitepress-multilingual-cms/sitepress.php' ],
+				[ 1 => 'wpml-string-translation/plugin.php' ],
 			],
 			'disabled and enabled in filter' => [
 				[
@@ -230,7 +265,7 @@ class Test_Main extends KAGG_TestCase {
 						'enabled_plugins'  => [ 'sitepress-multilingual-cms/sitepress.php' ],
 					],
 				],
-				[ 0 => 'sitepress-multilingual-cms/sitepress.php' ],
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
 			],
 		];
 	}
@@ -241,16 +276,16 @@ class Test_Main extends KAGG_TestCase {
 	 * @test
 	 */
 	public function it_does_nothing_on_backend_if_no_server_uri() {
-		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
+		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
 		$plugins = [ 'sitepress-multilingual-cms/sitepress.php' ];
 
-		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
-		\WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
-		\WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
-		\WP_Mock::userFunction( 'is_admin' )->andReturn( true );
-		\WP_Mock::passthruFunction( 'wp_cache_set' );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
+		WP_Mock::userFunction( 'is_admin' )->andReturn( true );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
 
 		unset( $_SERVER['REQUEST_URI'] );
 
@@ -268,24 +303,26 @@ class Test_Main extends KAGG_TestCase {
 	 * @dataProvider        dp_it_disables_plugins_on_backend
 	 */
 	public function it_disables_plugins_on_backend( $plugins, $filters, $expected ) {
-		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
-		\WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
-		\WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
-		\WP_Mock::userFunction( 'is_admin' )->andReturn( true );
-		\WP_Mock::passthruFunction( 'wp_cache_set' );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
+		WP_Mock::userFunction( 'is_admin' )->andReturn( true );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
 
-		if ( isset( $filters[0]['patterns'] ) ) {
-			$_SERVER['REQUEST_URI'] = $filters[0]['patterns'][0];
+		if ( is_array( $filters ) && isset( $filters[ count( $filters ) - 1 ]['patterns'] ) ) {
+			$_SERVER['REQUEST_URI'] = $filters[ count( $filters ) - 1 ]['patterns'][0];
 		} else {
 			$_SERVER['REQUEST_URI'] = '/some_url';
 		}
 
-		\WP_Mock::passthruFunction( 'wp_unslash' );
+		WP_Mock::passthruFunction( 'wp_unslash' );
 
-		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
+		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_backend_filters' )->andReturn( $filters );
 
-		$subject = new Main( $filters_instance );
+		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
+			->shouldAllowMockingProtectedMethods();
+		$subject->shouldReceive( 'is_rest' )->andReturn( false );
 		$this->assertSame( $expected, $subject->disable( $plugins ) );
 	}
 
@@ -350,12 +387,20 @@ class Test_Main extends KAGG_TestCase {
 				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
 				[
 					[
+						'patterns'         => [ '.*' ],
+						'locations'        => [ 'backend' ],
+						'disabled_plugins' => [
+							'sitepress-multilingual-cms/sitepress.php',
+							'wpml-string-translation/plugin.php',
+						],
+					],
+					[
 						'patterns'        => [ '/some_url4' ],
 						'locations'       => [ 'backend' ],
-						'enabled_plugins' => [ 'sitepress-multilingual-cms/sitepress.php' ],
+						'enabled_plugins' => [ 'wpml-string-translation/plugin.php' ],
 					],
 				],
-				[ 0 => 'sitepress-multilingual-cms/sitepress.php' ],
+				[ 1 => 'wpml-string-translation/plugin.php' ],
 			],
 			'disabled and enabled in filter' => [
 				[
@@ -371,7 +416,7 @@ class Test_Main extends KAGG_TestCase {
 						'enabled_plugins'  => [ 'sitepress-multilingual-cms/sitepress.php' ],
 					],
 				],
-				[ 0 => 'sitepress-multilingual-cms/sitepress.php' ],
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
 			],
 		];
 	}
@@ -382,7 +427,7 @@ class Test_Main extends KAGG_TestCase {
 	 * @test
 	 */
 	public function it_does_nothing_on_ajax_if_referer_is_admin_url() {
-		$referer = 'http://www.example.com/wp-admin/';
+		$referer = 'https://www.example.com/wp-admin/';
 		$action  = 'my-action';
 
 		$plugins = [ 'sitepress-multilingual-cms/sitepress.php' ];
@@ -396,25 +441,26 @@ class Test_Main extends KAGG_TestCase {
 			],
 		];
 
-		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
+		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_ajax_filters' )->andReturn( $filters );
 
-		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
-		\WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
-		\WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( true );
-		\WP_Mock::passthruFunction( 'wp_cache_set' );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( true );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
 
 		$_REQUEST['_wp_http_referer'] = $referer;
 		unset( $_SERVER['HTTP_REFERER'] );
 		$_SERVER['SCRIPT_FILENAME'] = 'admin-ajax.php';
 		$_POST['action']            = $action;
 
-		\WP_Mock::passthruFunction( 'wp_unslash' );
-		\WP_Mock::userFunction( 'admin_url' )->andReturn( $referer );
+		WP_Mock::passthruFunction( 'wp_unslash' );
+		WP_Mock::userFunction( 'admin_url' )->andReturn( $referer );
 
 		$subject = new Main( $filters_instance );
 		$this->assertSame( $plugins, $subject->disable( $plugins ) );
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		unset( $_REQUEST['_wp_http_referer'] );
 		$_SERVER['HTTP_REFERER'] = $referer;
 
@@ -430,7 +476,7 @@ class Test_Main extends KAGG_TestCase {
 	 * @test
 	 */
 	public function it_does_nothing_on_ajax_if_script_is_NOT_admin_ajax() {
-		$referer = 'http://www.example.com/some-page/';
+		$referer = 'https://www.example.com/some-page/';
 		$action  = 'my-action';
 
 		$plugins = [ 'sitepress-multilingual-cms/sitepress.php' ];
@@ -444,19 +490,19 @@ class Test_Main extends KAGG_TestCase {
 			],
 		];
 
-		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
+		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_ajax_filters' )->andReturn( $filters );
 
-		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
-		\WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
-		\WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( true );
-		\WP_Mock::passthruFunction( 'wp_cache_set' );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( true );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
 
 		$_REQUEST['_wp_http_referer'] = $referer;
 		$_POST['action']              = $action;
 
-		\WP_Mock::passthruFunction( 'wp_unslash' );
-		\WP_Mock::userFunction( 'admin_url' )->andReturn( 'http://www.example.com/wp-admin/' );
+		WP_Mock::passthruFunction( 'wp_unslash' );
+		WP_Mock::userFunction( 'admin_url' )->andReturn( 'https://www.example.com/wp-admin/' );
 
 		$subject = new Main( $filters_instance );
 		$this->assertSame( $plugins, $subject->disable( $plugins ) );
@@ -473,28 +519,30 @@ class Test_Main extends KAGG_TestCase {
 	 * @dataProvider        dp_it_disables_plugins_on_ajax
 	 */
 	public function it_disables_plugins_on_ajax( $plugins, $filters, $expected ) {
-		$referer = 'http://www.example.com/some-page/';
+		$referer = 'https://www.example.com/some-page/';
 
-		$filters_instance = \Mockery::mock( 'KAGG\Disable_Plugins\Filters' );
+		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_ajax_filters' )->andReturn( $filters );
 
-		\WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
-		\WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
-		\WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( true );
-		\WP_Mock::passthruFunction( 'wp_cache_set' );
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( true );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
 
 		$_REQUEST['_wp_http_referer'] = $referer;
 		$_SERVER['SCRIPT_FILENAME']   = 'admin-ajax.php';
-		if ( isset( $filters[0]['patterns'] ) ) {
-			$_POST['action'] = $filters[0]['patterns'][0];
+		if ( is_array( $filters ) && isset( $filters[ count( $filters ) - 1 ]['patterns'] ) ) {
+			$_POST['action'] = $filters[ count( $filters ) - 1 ]['patterns'][0];
 		} else {
 			$_POST['action'] = 'my-action';
 		}
 
-		\WP_Mock::passthruFunction( 'wp_unslash' );
-		\WP_Mock::userFunction( 'admin_url' )->andReturn( 'http://www.example.com/wp-admin/' );
+		WP_Mock::passthruFunction( 'wp_unslash' );
+		WP_Mock::userFunction( 'admin_url' )->andReturn( 'https://www.example.com/wp-admin/' );
 
-		$subject = new Main( $filters_instance );
+		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
+			->shouldAllowMockingProtectedMethods();
+		$subject->shouldReceive( 'is_rest' )->andReturn( false );
 		$this->assertSame( $expected, $subject->disable( $plugins ) );
 	}
 
@@ -540,12 +588,20 @@ class Test_Main extends KAGG_TestCase {
 				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
 				[
 					[
+						'patterns'         => [ 'my-action4' ],
+						'locations'        => [ 'ajax' ],
+						'disabled_plugins' => [
+							'sitepress-multilingual-cms/sitepress.php',
+							'wpml-string-translation/plugin.php',
+						],
+					],
+					[
 						'patterns'        => [ 'my-action4' ],
 						'locations'       => [ 'ajax' ],
-						'enabled_plugins' => [ 'sitepress-multilingual-cms/sitepress.php' ],
+						'enabled_plugins' => [ 'wpml-string-translation/plugin.php' ],
 					],
 				],
-				[ 0 => 'sitepress-multilingual-cms/sitepress.php' ],
+				[ 1 => 'wpml-string-translation/plugin.php' ],
 			],
 			'disabled and enabled in filter' => [
 				[
@@ -561,19 +617,8 @@ class Test_Main extends KAGG_TestCase {
 						'enabled_plugins'  => [ 'sitepress-multilingual-cms/sitepress.php' ],
 					],
 				],
-				[ 0 => 'sitepress-multilingual-cms/sitepress.php' ],
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
 			],
 		];
-	}
-
-	/**
-	 * Finalise test
-	 */
-	public function tearDown() {
-		parent::tearDown();
-
-		unset( $_SERVER['REQUEST_URI'] );
-		unset( $_REQUEST['_wp_http_referer'] );
-		unset( $_SERVER['SCRIPT_FILENAME'] );
 	}
 }

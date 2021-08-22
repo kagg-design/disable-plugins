@@ -6,25 +6,27 @@
  */
 
 namespace KAGG;
+
 use PHPUnit\Framework\TestCase;
+use WP_Mock;
 
 /**
  * Class KAGG_TestCase
  */
-class KAGG_TestCase extends TestCase {
+abstract class KAGG_TestCase extends TestCase {
 	/**
 	 * Setup test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
-		\WP_Mock::setUp();
+		WP_Mock::setUp();
 	}
 
 	/**
 	 * End test
 	 */
-	public function tearDown() {
-		\WP_Mock::tearDown();
+	public function tearDown(): void {
+		WP_Mock::tearDown();
 		parent::tearDown();
 	}
 }
