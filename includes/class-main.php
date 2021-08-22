@@ -85,6 +85,8 @@ class Main {
 			$allowed_plugins = $this->disable_on_rest( $plugins );
 		} elseif ( $this->is_cli() ) {
 			$allowed_plugins = $this->disable_on_cli( $plugins );
+		} elseif ( $this->is_xml_rpc() ) {
+			$allowed_plugins = $this->disable_on_xml_rpc( $plugins );
 		} else {
 			$allowed_plugins = $this->disable_on_frontend( $plugins );
 		}
@@ -175,6 +177,17 @@ class Main {
 	 * @return array
 	 */
 	private function disable_on_cli( $plugins ) {
+		return $plugins;
+	}
+
+	/**
+	 * Disable plugins on XML-RPC
+	 *
+	 * @param array $plugins Plugins.
+	 *
+	 * @return array
+	 */
+	private function disable_on_xml_rpc( $plugins ) {
 		return $plugins;
 	}
 
@@ -312,5 +325,14 @@ class Main {
 	 */
 	private function is_cli() {
 		return defined( 'WP_CLI' ) && WP_CLI;
+	}
+
+	/**
+	 * Check of it is a xml-rpc request
+	 *
+	 * @return bool
+	 */
+	private function is_xml_rpc() {
+		return defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST;
 	}
 }
