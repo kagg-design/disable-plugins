@@ -60,6 +60,17 @@
   },
   {
     "patterns": [
+      "cron event run kagg_w2f_update_ban"
+    ],
+    "locations": [
+      "cli"
+    ],
+    "disabled_plugins": [
+      "akismet/akismet.php"
+    ]
+  },
+  {
+    "patterns": [
       "wp.getAuthors"
     ],
     "locations": [

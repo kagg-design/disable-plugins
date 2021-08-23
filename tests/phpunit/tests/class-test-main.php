@@ -37,7 +37,8 @@ class Test_Main extends KAGG_TestCase {
 			$_SERVER['SCRIPT_FILENAME'],
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$_REQUEST['_wp_http_referer'],
-			$GLOBALS['HTTP_RAW_POST_DATA']
+			$GLOBALS['HTTP_RAW_POST_DATA'],
+			$GLOBALS['argv']
 		);
 
 		parent::tearDown();
@@ -629,6 +630,134 @@ class Test_Main extends KAGG_TestCase {
 	}
 
 	/**
+	 * It disables plugins on cli
+	 *
+	 * @param array $plugins  Plugins.
+	 * @param array $filters  Filters.
+	 * @param array $expected Expected result.
+	 *
+	 * @test
+	 * @dataProvider        dp_it_disables_plugins_on_cli
+	 */
+	public function it_disables_plugins_on_cli( $plugins, $filters, $expected ) {
+		$argv = [
+			'cron',
+			'event',
+			'run',
+			'kagg_w2f_update_ban',
+		];
+
+		$filters_instance = Mockery::mock( Filters::class );
+		$filters_instance->shouldReceive( 'get_cli_filters' )->andReturn( $filters );
+
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
+		WP_Mock::userFunction( 'is_admin' )->andReturn( false );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
+
+		FunctionMocker::replace(
+			'defined',
+			static function ( $constant_name ) {
+				return 'WP_CLI' === $constant_name;
+			}
+		);
+
+		FunctionMocker::replace(
+			'constant',
+			static function ( $constant_name ) {
+				return 'WP_CLI' === $constant_name;
+			}
+		);
+
+		if ( is_array( $filters ) && isset( $filters[ count( $filters ) - 1 ]['patterns'] ) ) {
+			$command         = $filters[ count( $filters ) - 1 ]['patterns'][0];
+			$GLOBALS['argv'] = explode( ' ', 'wp ' . $command );
+		}
+
+		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
+			->shouldAllowMockingProtectedMethods();
+		$subject->shouldReceive( 'is_rest' )->andReturn( false );
+		$this->assertSame( $expected, $subject->disable( $plugins ) );
+	}
+
+	/**
+	 * Data provider for it_disables_plugins_on_cli
+	 */
+	public function dp_it_disables_plugins_on_cli() {
+		return [
+			'not an array'                   => [ 'some string', null, 'some string' ],
+			'empty array'                    => [ [], null, [] ],
+			'empty pattern'                  => [
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+				[
+					[
+						'patterns'  => [ '' ],
+						'locations' => [ 'cli' ],
+					],
+				],
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+			],
+			'just patterns in filter'        => [
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+				[
+					[
+						'patterns'  => [ 'command1' ],
+						'locations' => [ 'cli' ],
+					],
+				],
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+			],
+			'disabled in filter'             => [
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+				[
+					[
+						'patterns'         => [ 'command2' ],
+						'locations'        => [ 'cli' ],
+						'disabled_plugins' => [ 'sitepress-multilingual-cms/sitepress.php' ],
+					],
+				],
+				[ 1 => 'wpml-string-translation/plugin.php' ],
+			],
+			'enabled in filter'              => [
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+				[
+					[
+						'patterns'         => [ '.*' ],
+						'locations'        => [ 'cli' ],
+						'disabled_plugins' => [
+							'sitepress-multilingual-cms/sitepress.php',
+							'wpml-string-translation/plugin.php',
+						],
+					],
+					[
+						'patterns'        => [ 'command3' ],
+						'locations'       => [ 'cli' ],
+						'enabled_plugins' => [ 'wpml-string-translation/plugin.php' ],
+					],
+				],
+				[ 1 => 'wpml-string-translation/plugin.php' ],
+			],
+			'disabled and enabled in filter' => [
+				[
+					'sitepress-multilingual-cms/sitepress.php',
+					'wpml-string-translation/plugin.php',
+					'wpml-translation-management/plugin.php',
+				],
+				[
+					[
+						'patterns'         => [ 'command4' ],
+						'locations'        => [ 'cli' ],
+						'disabled_plugins' => [ 'wpml-translation-management/plugin.php' ],
+						'enabled_plugins'  => [ 'sitepress-multilingual-cms/sitepress.php' ],
+					],
+				],
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+			],
+		];
+	}
+
+	/**
 	 * It disables plugins on xml-rpc
 	 *
 	 * @param array $plugins  Plugins.
@@ -693,7 +822,7 @@ class Test_Main extends KAGG_TestCase {
 	}
 
 	/**
-	 * Data provider for it_disables_plugins_on_ajax
+	 * Data provider for it_disables_plugins_on_xml_rpc
 	 */
 	public function dp_it_disables_plugins_on_xml_rpc() {
 		return [

@@ -177,7 +177,10 @@ class Main {
 	 * @return array
 	 */
 	private function disable_on_cli( $plugins ) {
-		return $plugins;
+		$argv    = array_slice( $GLOBALS['argv'], 1 );
+		$command = implode( ' ', $argv );
+
+		return $this->filter_plugins( $plugins, $command, $this->filters->get_cli_filters() );
 	}
 
 	/**
@@ -335,7 +338,7 @@ class Main {
 	 * @return bool
 	 */
 	protected function is_cli() {
-		return defined( 'WP_CLI' ) && WP_CLI;
+		return defined( 'WP_CLI' ) && constant( 'WP_CLI' );
 	}
 
 	/**
