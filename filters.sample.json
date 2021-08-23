@@ -1,57 +1,49 @@
 [
   {
     "patterns": [
-      ".*(showcase|escaparate|vorzeigeprojekte|sites-vitrine|mostruario|ショーケース|展示|vetrina|المعرض)\\/$",
-      "^(\\/)*(es|de|fr|pt-br|ja|ru|zh-hans|it|he|ar|)\\/$"
+      ".*"
     ],
     "locations": [
       "frontend"
     ],
     "disabled_plugins": [
-      "classic-editor/classic-editor.php",
-      "google-apps-login/google_apps_login.php",
-      "woocommerce-customer-order-csv-export-master/woocommerce-customer-order-csv-export.php",
-      "wp-polls/wp-polls.php"
+      "jetpack/jetpack.php",
+      "tablepress/tablepress.php"
     ]
   },
   {
     "patterns": [
-      ".*showcase\\/.+"
+      ".*\\/solutions\\/bale-packing\\/bale-packing-system",
+      ".*\\/news\\/to-pack-better-round-bales-vs-square"
     ],
     "locations": [
       "frontend"
     ],
-    "disabled_plugins": [
-      "classic-editor/classic-editor.php",
-      "google-apps-login/google_apps_login.php",
-      "gravatar-shortcode/gravatar-shortcode.php",
-      "woocommerce-customer-order-csv-export-master/woocommerce-customer-order-csv-export.php",
-      "wp-polls/wp-polls.php"
+    "enabled_plugins": [
+      "tablepress/tablepress.php"
     ]
   },
   {
     "patterns": [
-      ".*admin\\.php\\?page=(support-queues|bbps_management_dashboard|bbps-stats-dashboard.*|bbps_rating_dashboard|bbps_management_badges|bbps_summary_ratings|bbps_tickets_summary_queue|bbps_automatic_assignment_stats)"
+      ".*\\/news\\/.+$"
+    ],
+    "locations": [
+      "frontend"
+    ],
+    "enabled_plugins": [
+      "jetpack/jetpack.php"
+    ]
+  },
+  {
+    "patterns": [
+      ".*admin\\.php\\?page=(support-queues|bbps_management_dashboard|bbps-stats-dashboard.*)"
     ],
     "locations": [
       "backend"
     ],
     "disabled_plugins": [
-      "woocommerce-customer-order-csv-export-master/woocommerce-customer-order-csv-export.php",
       "woothemes-updater/woothemes-updater.php",
       "wp-polls/wp-polls.php"
-    ]
-  },
-  {
-    "patterns": [
-      ".*post\\.php.+action=edit"
-    ],
-    "locations": [
-      "backend"
-    ],
-    "disabled_plugins": [
-      "woocommerce-customer-order-csv-export-master/woocommerce-customer-order-csv-export.php",
-      "woothemes-updater/woothemes-updater.php"
     ]
   },
   {
@@ -64,6 +56,17 @@
     "disabled_plugins": [
       "wp-cron-cleaner/wp-cron-cleaner.php",
       "wp-polls/wp-polls.php"
+    ]
+  },
+  {
+    "patterns": [
+      "wp.getAuthors"
+    ],
+    "locations": [
+      "xml-rpc"
+    ],
+    "disabled_plugins": [
+      "quform/quform.php"
     ]
   }
 ]

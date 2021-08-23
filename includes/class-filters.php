@@ -85,6 +85,15 @@ class Filters {
 	}
 
 	/**
+	 * Get xml-rpc filters
+	 *
+	 * @return array
+	 */
+	public function get_xml_rpc_filters() {
+		return $this->get_filters_for_location( 'xml-rpc' );
+	}
+
+	/**
 	 * Get filters for given location
 	 *
 	 * @param string $location Location name.

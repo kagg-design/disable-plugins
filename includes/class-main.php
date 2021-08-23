@@ -188,7 +188,18 @@ class Main {
 	 * @return array
 	 */
 	private function disable_on_xml_rpc( $plugins ) {
-		return $plugins;
+		// Raw post data, set up in xmlrpc.php.
+		// phpcs:disable PHPCompatibility.Variables.RemovedPredefinedGlobalVariables.http_raw_post_dataDeprecatedRemoved
+		global $HTTP_RAW_POST_DATA;
+
+		$method = '';
+		if ( preg_match( '#<methodName>(.+)</methodName>#', $HTTP_RAW_POST_DATA, $matches ) ) {
+			$method = trim( $matches[1] );
+		}
+
+		// phpcs:enable PHPCompatibility.Variables.RemovedPredefinedGlobalVariables.http_raw_post_dataDeprecatedRemoved
+
+		return $this->filter_plugins( $plugins, $method, $this->filters->get_xml_rpc_filters() );
 	}
 
 	/**
@@ -323,7 +334,7 @@ class Main {
 	 *
 	 * @return bool
 	 */
-	private function is_cli() {
+	protected function is_cli() {
 		return defined( 'WP_CLI' ) && WP_CLI;
 	}
 
@@ -332,7 +343,7 @@ class Main {
 	 *
 	 * @return bool
 	 */
-	private function is_xml_rpc() {
-		return defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST;
+	protected function is_xml_rpc() {
+		return defined( 'XMLRPC_REQUEST' ) && constant( 'XMLRPC_REQUEST' );
 	}
 }

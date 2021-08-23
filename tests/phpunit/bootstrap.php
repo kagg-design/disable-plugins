@@ -5,6 +5,8 @@
  * @package kagg/disable_plugins
  */
 
+use tad\FunctionMocker\FunctionMocker;
+
 /**
  * Test constants.
  */
@@ -21,7 +23,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', PLUGIN_PATH . '/../../' );
 }
 
-/**
- * Bootstrap WP Mock.
- */
+FunctionMocker::init(
+	[
+		'blacklist'             => [
+			realpath( PLUGIN_PATH ),
+		],
+		'whitelist'             => [
+			realpath( PLUGIN_PATH . '/disable-plugins.php' ),
+			realpath( PLUGIN_PATH . '/includes' ),
+		],
+		'redefinable-internals' => [
+			'defined',
+			'constant',
+		],
+	]
+);
+
 WP_Mock::bootstrap();

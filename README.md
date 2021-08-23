@@ -1,6 +1,6 @@
 # WordPress Plugin Disable Plugins
 
-Disable Plugins allows disabling unneeded plugins on certain urls/ajax calls to improve site performance.
+Disable Plugins allows disabling unneeded plugins on certain urls/ajax/xml-rpc calls to improve site performance.
 
 # Description
 
@@ -17,51 +17,96 @@ Filters to have the following structure
 [
   {
     "patterns": [
-      ".*(showcase|escaparate|vorzeigeprojekte|sites-vitrine|mostruario|ショーケース|展示|vetrina|المعرض)\\/$",
-      ".*showcase\\/.*",
+      ".*"
     ],
     "locations": [
       "frontend"
     ],
     "disabled_plugins": [
-      "wordpress-seo/wp-seo.php",
+      "jetpack/jetpack.php",
+      "tablepress/tablepress.php"
     ]
   },
-  { ...
-  }
-]
-```
-
-or
-
-```
-[
   {
     "patterns": [
-      ".*(showcase|escaparate|vorzeigeprojekte|sites-vitrine|mostruario|ショーケース|展示|vetrina|المعرض)\\/$",
-      ".*showcase\\/.*",
+      ".*\\/solutions\\/bale-packing\\/bale-packing-system",
+      ".*\\/news\\/to-pack-better-round-bales-vs-square"
     ],
     "locations": [
       "frontend"
     ],
     "enabled_plugins": [
-      "sitepress-multilingual-cms/sitepress.php",
-      "wordpress-seo/wp-seo.php",
-      "wpml-string-translation/plugin.php"
+      "tablepress/tablepress.php"
     ]
   },
-  { ...
+  {
+    "patterns": [
+      ".*\\/news\\/.+$"
+    ],
+    "locations": [
+      "frontend"
+    ],
+    "enabled_plugins": [
+      "jetpack/jetpack.php"
+    ]
+  },
+  {
+    "patterns": [
+      ".*admin\\.php\\?page=(support-queues|bbps_management_dashboard|bbps-stats-dashboard.*)"
+    ],
+    "locations": [
+      "backend"
+    ],
+    "disabled_plugins": [
+      "woothemes-updater/woothemes-updater.php",
+      "wp-polls/wp-polls.php"
+    ]
+  },
+  {
+    "patterns": [
+      "wpv_get_archive_query_results"
+    ],
+    "locations": [
+      "ajax"
+    ],
+    "disabled_plugins": [
+      "wp-cron-cleaner/wp-cron-cleaner.php",
+      "wp-polls/wp-polls.php"
+    ]
+  },
+  {
+    "patterns": [
+      "wp.getAuthors"
+    ],
+    "locations": [
+      "xml-rpc"
+    ],
+    "disabled_plugins": [
+      "quform/quform.php"
+    ]
   }
 ]
 ```
 
-where `patterns` is an array of regular expressions to compare with page slug (for frontend filters), ajax action (for ajax filters), etc.
+where `patterns` is an array of regular expressions to compare with page slug (for frontend filters), ajax action (for ajax filters), xml-rpc function (for xml-rpc filters) etc.
 
-`locations` is an array of locations. Allowed locations are `frontend`, `backend`, `ajax`, `rest`, `cli`.
+`locations` is an array of locations. Allowed locations are `frontend`, `backend`, `ajax`, `rest`, `cli`, `xml-rpc`. Functionality for rest and CLI locations will be realized in the nearest future.
 
 `disabled_plugins` can contain the list of plugins to disable.
 
 `enabled_plugins` can contain the list of plugins to leave enabled.
+
+Each disabled/enabled plugin is described by its `folder/plugin-file.php` string.
+
+In the example above, there are several set of filters: 3 for frontend, 1 for backend, 1 for ajax and 1 for xml-rpc.
+
+By the first frontend filter, we disable 2 plugins (Jetpack and TablePress) for all urls on the frontend. By the second filter, we enable TablePress plugin for 2 urls on the frontend. By the third filter, we enable Jetpack on some other urls on the frontend.
+
+By the backend filter, we disable 2 plugins (WooThemes Updater and WP Polls) on certain admin pages.
+
+By the ajax filer, we disable 2 plugins (WP Cron Cleaner and WP Polls) during the `wpv_get_archive_query_results` ajax request.
+
+By the xml-rpc filter, we disable plugin QuForm on xml-rpc request with the `wp.getAuthors` function.
 
 ## Installation
 

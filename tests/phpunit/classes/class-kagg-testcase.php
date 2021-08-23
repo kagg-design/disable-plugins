@@ -8,6 +8,7 @@
 namespace KAGG;
 
 use PHPUnit\Framework\TestCase;
+use tad\FunctionMocker\FunctionMocker;
 use WP_Mock;
 
 /**
@@ -18,6 +19,7 @@ abstract class KAGG_TestCase extends TestCase {
 	 * Setup test
 	 */
 	public function setUp(): void {
+		FunctionMocker::setUp();
 		parent::setUp();
 		WP_Mock::setUp();
 	}
@@ -28,5 +30,6 @@ abstract class KAGG_TestCase extends TestCase {
 	public function tearDown(): void {
 		WP_Mock::tearDown();
 		parent::tearDown();
+		FunctionMocker::tearDown();
 	}
 }
