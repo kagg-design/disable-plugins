@@ -32,8 +32,13 @@ class Test_Main extends KAGG_TestCase {
 	 * Finalise test
 	 */
 	public function tearDown(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		unset( $_SERVER['REQUEST_URI'], $_REQUEST['_wp_http_referer'], $_SERVER['SCRIPT_FILENAME'] );
+		unset(
+			$_SERVER['REQUEST_URI'],
+			$_SERVER['SCRIPT_FILENAME'],
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$_REQUEST['_wp_http_referer'],
+			$GLOBALS['HTTP_RAW_POST_DATA']
+		);
 
 		parent::tearDown();
 	}
