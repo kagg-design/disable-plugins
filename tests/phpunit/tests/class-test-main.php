@@ -769,20 +769,27 @@ class Test_Main extends KAGG_TestCase {
 	 * @noinspection        RequiredAttributes
 	 */
 	public function it_disables_plugins_on_xml_rpc( $plugins, $filters, $expected ) {
-		$http_raw_post_data = '<?xml version="1.0"?>
+		$http_raw_post_data = '
+<?xml version="1.0"?>
 <methodCall>
-<methodName>someMethod</methodName>
-<params>
-<param>
-<value><int>0</int></value>
-</param>
-<param>
-<value><string>username</string></value>
-</param>
-<param>
-<value><string>password</string></value>
-</param>
-</params>
+    <methodName>someMethod</methodName>
+    <params>
+        <param>
+            <value>
+                <int>0</int>
+            </value>
+        </param>
+        <param>
+            <value>
+                <string>username</string>
+            </value>
+        </param>
+        <param>
+            <value>
+                <string>password</string>
+            </value>
+        </param>
+    </params>
 </methodCall>';
 
 		$filters_instance = Mockery::mock( Filters::class );
