@@ -818,13 +818,6 @@ class Test_Main extends KAGG_TestCase {
 	 * @dataProvider        dp_it_disables_plugins_on_cli
 	 */
 	public function it_disables_plugins_on_cli( $plugins, $filters, $expected ) {
-		$argv = [
-			'cron',
-			'event',
-			'run',
-			'kagg_w2f_update_ban',
-		];
-
 		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_cli_filters' )->andReturn( $filters );
 
