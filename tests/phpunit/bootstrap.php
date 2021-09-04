@@ -35,6 +35,7 @@ FunctionMocker::init(
 		'redefinable-internals' => [
 			'defined',
 			'constant',
+			'filter_input',
 		],
 	]
 );

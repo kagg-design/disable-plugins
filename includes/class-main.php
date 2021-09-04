@@ -31,6 +31,13 @@ class Main {
 	private $filters;
 
 	/**
+	 * REST route.
+	 *
+	 * @var string
+	 */
+	private $rest_route = '';
+
+	/**
 	 * Main constructor.
 	 *
 	 * @param Filters $filters Instance of class Filters, providing plugin filters.
@@ -110,7 +117,7 @@ class Main {
 	 *
 	 * @return array
 	 */
-	private function disable_on_frontend( $plugins ) {
+	protected function disable_on_frontend( $plugins ) {
 		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
 			return $plugins;
 		}
@@ -166,7 +173,7 @@ class Main {
 	 * @return array
 	 */
 	private function disable_on_rest( $plugins ) {
-		return $plugins;
+		return $this->filter_plugins( $plugins, $this->rest_route, $this->filters->get_rest_filters() );
 	}
 
 	/**
@@ -286,6 +293,21 @@ class Main {
 	}
 
 	/**
+	 * Get REST route.
+	 * Returns route if it is a REST request, otherwise empty string.
+	 *
+	 * @return string
+	 */
+	protected function get_rest_route() {
+		$current_path = wp_parse_url( add_query_arg( [] ), PHP_URL_PATH );
+		$rest_path    = wp_parse_url( trailingslashit( rest_url() ), PHP_URL_PATH );
+
+		$is_rest = 0 === strpos( $current_path, $rest_path );
+
+		return $is_rest ? substr( $current_path, strlen( $rest_path ) ) : '';
+	}
+
+	/**
 	 * Checks if the current request is a WP REST API request.
 	 *
 	 * Case #1: After WP_REST_Request initialisation
@@ -305,6 +327,8 @@ class Main {
 
 		// Case #1.
 		if ( defined( 'REST_REQUEST' ) && constant( 'REST_REQUEST' ) ) {
+			$this->rest_route = $this->get_rest_route();
+
 			return true;
 		}
 
@@ -314,22 +338,26 @@ class Main {
 			filter_input( INPUT_GET, 'rest_route', FILTER_SANITIZE_STRING ) :
 			'';
 
-		if ( 0 === strpos( trim( $rest_route, '\\/' ), rest_get_url_prefix() ) ) {
+		if ( $rest_route ) {
+			$this->rest_route = ltrim( $rest_route, '/' );
+
 			return true;
 		}
 
 		// Case #3.
 		global $wp_rewrite;
+
 		if ( null === $wp_rewrite ) {
+			// @codeCoverageIgnoreStart
 			// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 			$wp_rewrite = new WP_Rewrite();
+			// @codeCoverageIgnoreEnd
 		}
 
-		// Case #4.
-		$current_url = wp_parse_url( add_query_arg( [] ), PHP_URL_PATH );
-		$rest_url    = wp_parse_url( trailingslashit( rest_url() ), PHP_URL_PATH );
+		$this->rest_route = $this->get_rest_route();
 
-		return 0 === strpos( $current_url, $rest_url );
+		// Case #4.
+		return (bool) $this->rest_route;
 	}
 
 	/**

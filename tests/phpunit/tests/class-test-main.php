@@ -35,9 +35,12 @@ class Test_Main extends KAGG_TestCase {
 		unset(
 			$_SERVER['REQUEST_URI'],
 			$_SERVER['SCRIPT_FILENAME'],
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended
+			$_GET['rest_route'],
 			$_REQUEST['_wp_http_referer'],
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 			$GLOBALS['HTTP_RAW_POST_DATA'],
+			$GLOBALS['wp_rewrite'],
 			$GLOBALS['argv']
 		);
 
@@ -630,6 +633,181 @@ class Test_Main extends KAGG_TestCase {
 	}
 
 	/**
+	 * It disables plugins on rest, case 1
+	 *
+	 * @param array $plugins  Plugins.
+	 * @param array $filters  Filters.
+	 * @param array $expected Expected result.
+	 *
+	 * @test
+	 * @dataProvider        dp_it_disables_plugins_on_rest
+	 */
+	public function it_disables_plugins_on_rest_case1( $plugins, $filters, $expected ) {
+		$filters_instance = Mockery::mock( Filters::class );
+		$filters_instance->shouldReceive( 'get_rest_filters' )->andReturn( $filters );
+
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
+		WP_Mock::userFunction( 'is_admin' )->andReturn( false );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
+
+		if ( is_array( $filters ) && isset( $filters[ count( $filters ) - 1 ]['patterns'] ) ) {
+			$rest_route = $filters[ count( $filters ) - 1 ]['patterns'][0];
+		} else {
+			$rest_route = 'some-route';
+		}
+
+		$_SERVER['REQUEST_URI'] = '/wp-json/' . $rest_route;
+
+		FunctionMocker::replace(
+			'defined',
+			static function ( $constant_name ) {
+				return 'REST_REQUEST' === $constant_name;
+			}
+		);
+
+		FunctionMocker::replace(
+			'constant',
+			static function ( $constant_name ) {
+				return 'REST_REQUEST' === $constant_name;
+			}
+		);
+
+		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[get_rest_route]', [ $filters_instance ] )
+			->shouldAllowMockingProtectedMethods();
+		$subject->shouldReceive( 'get_rest_route' )->andReturn( $rest_route );
+		$this->assertSame( $expected, $subject->disable( $plugins ) );
+	}
+
+	/**
+	 * It disables plugins on rest, cases 2-4
+	 *
+	 * @param array $plugins  Plugins.
+	 * @param array $filters  Filters.
+	 * @param array $expected Expected result.
+	 *
+	 * @test
+	 * @dataProvider        dp_it_disables_plugins_on_rest
+	 */
+	public function it_disables_plugins_on_rest_case2_4( $plugins, $filters, $expected ) {
+		$filters_instance = Mockery::mock( Filters::class );
+		$filters_instance->shouldReceive( 'get_rest_filters' )->andReturn( $filters );
+
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$GLOBALS['wp_rewrite'] = Mockery::mock( 'WP_Rewrite' );
+
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
+		WP_Mock::userFunction( 'is_admin' )->andReturn( false );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
+
+		if ( is_array( $filters ) && isset( $filters[ count( $filters ) - 1 ]['patterns'] ) ) {
+			$rest_route = $filters[ count( $filters ) - 1 ]['patterns'][0];
+		} else {
+			$rest_route = 'some-route';
+		}
+
+		$_SERVER['REQUEST_URI'] = '/some-uri';
+		$_GET['rest_route']     = $rest_route;
+
+		FunctionMocker::replace(
+			'filter_input',
+			static function ( $type, $var_name, $filter ) use ( $rest_route ) {
+				if ( INPUT_GET === $type && 'rest_route' === $var_name && FILTER_SANITIZE_STRING === $filter ) {
+					return $rest_route;
+				}
+
+				return 'wrong route';
+			}
+		);
+
+		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[get_rest_route,disable_on_frontend]', [ $filters_instance ] )
+			->shouldAllowMockingProtectedMethods();
+		$subject->shouldReceive( 'get_rest_route' )->andReturn( $rest_route );
+		$subject->shouldReceive( 'disable_on_frontend' )->with( $plugins )->andReturn( $plugins );
+
+		$this->assertSame( $expected, $subject->disable( $plugins ) );
+	}
+
+	/**
+	 * Data provider for it_disables_plugins_on_rest
+	 */
+	public function dp_it_disables_plugins_on_rest() {
+		return [
+			'not an array'                   => [ 'some string', null, 'some string' ],
+			'empty array'                    => [ [], null, [] ],
+			'empty pattern'                  => [
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+				[
+					[
+						'patterns'  => [ '' ],
+						'locations' => [ 'rest' ],
+					],
+				],
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+			],
+			'just patterns in filter'        => [
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+				[
+					[
+						'patterns'  => [ 'wp/v2/route1' ],
+						'locations' => [ 'rest' ],
+					],
+				],
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+			],
+			'disabled in filter'             => [
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+				[
+					[
+						'patterns'         => [ 'wp/v2/route2' ],
+						'locations'        => [ 'rest' ],
+						'disabled_plugins' => [ 'sitepress-multilingual-cms/sitepress.php' ],
+					],
+				],
+				[ 1 => 'wpml-string-translation/plugin.php' ],
+			],
+			'enabled in filter'              => [
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+				[
+					[
+						'patterns'         => [ '.*' ],
+						'locations'        => [ 'rest' ],
+						'disabled_plugins' => [
+							'sitepress-multilingual-cms/sitepress.php',
+							'wpml-string-translation/plugin.php',
+						],
+					],
+					[
+						'patterns'        => [ 'wp/v2/route3' ],
+						'locations'       => [ 'rest' ],
+						'enabled_plugins' => [ 'wpml-string-translation/plugin.php' ],
+					],
+				],
+				[ 1 => 'wpml-string-translation/plugin.php' ],
+			],
+			'disabled and enabled in filter' => [
+				[
+					'sitepress-multilingual-cms/sitepress.php',
+					'wpml-string-translation/plugin.php',
+					'wpml-translation-management/plugin.php',
+				],
+				[
+					[
+						'patterns'         => [ 'wp/v2/route4' ],
+						'locations'        => [ 'rest' ],
+						'disabled_plugins' => [ 'wpml-translation-management/plugin.php' ],
+						'enabled_plugins'  => [ 'sitepress-multilingual-cms/sitepress.php' ],
+					],
+				],
+				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
+			],
+		];
+	}
+
+	/**
 	 * It disables plugins on cli
 	 *
 	 * @param array $plugins  Plugins.
@@ -901,6 +1079,49 @@ class Test_Main extends KAGG_TestCase {
 				],
 				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
 			],
+		];
+	}
+
+	/**
+	 * Test get_rest_route().
+	 *
+	 * @param string $current_path Current path.
+	 * @param string $expected     Expected.
+	 *
+	 * @test
+	 * @dataProvider dp_it_gets_rest_route
+	 */
+	public function it_gets_rest_route( $current_path, $expected ) {
+		$current_url = 'https://test.test' . $current_path;
+
+		$rest_path = '/wp-json';
+		$rest_url  = 'https://test.test' . $rest_path . '/';
+
+		WP_Mock::userFunction( 'add_query_arg' )->with( [] )->andReturn( $current_url );
+		WP_Mock::userFunction( 'wp_parse_url' )->with( $current_url, PHP_URL_PATH )->andReturn( $current_path );
+
+		WP_Mock::userFunction( 'rest_url' )->andReturn( $rest_url );
+		WP_Mock::userFunction( 'trailingslashit' )->andReturnUsing(
+			function ( $string ) {
+				return rtrim( $string, '/' ) . '/';
+			}
+		);
+		WP_Mock::userFunction( 'wp_parse_url' )->with( $rest_url, PHP_URL_PATH )->andReturn( $rest_path );
+
+		$subject = Mockery::mock( Main::class )->makePartial();
+
+		self::assertSame( $expected, $subject->get_rest_route() );
+	}
+
+	/**
+	 * Data provider for it_gets_rest_route.
+	 *
+	 * @return array
+	 */
+	public function dp_it_gets_rest_route() {
+		return [
+			'rest request' => [ '/wp-json/wp/v2/posts', '/wp/v2/posts' ],
+			'some request' => [ '/some-request', '' ],
 		];
 	}
 }
