@@ -66,5 +66,13 @@
       "wp-cron-cleaner/wp-cron-cleaner.php",
       "wp-polls/wp-polls.php"
     ]
+  },
+  {
+    "patterns": [
+      "some-pattern-without-location"
+    ],
+    "disabled_plugins": [
+      "wp-polls/wp-polls.php"
+    ]
   }
 ]

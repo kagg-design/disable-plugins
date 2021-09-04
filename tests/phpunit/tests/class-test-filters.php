@@ -16,10 +16,37 @@ use KAGG\Disable_Plugins\Filters;
 class Test_Filters extends KAGG_TestCase {
 
 	/**
+	 * Test get_frontend_filters() with wrong filter filename.
+	 */
+	public function test_get_frontend_filters_with_wrong_filter_filename() {
+		$subject = new Filters( PLUGIN_TESTS_DIR . '/non.existing.json' );
+		self::assertSame( [], $subject->get_frontend_filters() );
+	}
+
+	/**
+	 * Test get_frontend_filters() with empty filter file.
+	 */
+	public function test_get_frontend_filters_with_empty_filter_file() {
+		$subject = new Filters( PLUGIN_TESTS_DIR . '/tests/empty.file.test.json' );
+		self::assertSame( [], $subject->get_frontend_filters() );
+	}
+
+	/**
+	 * Test get_frontend_filters() with empty json.
+	 */
+	public function test_get_frontend_filters_with_empty_json() {
+		$subject = new Filters( PLUGIN_TESTS_DIR . '/tests/empty.json.test.json' );
+		self::assertSame( [], $subject->get_frontend_filters() );
+	}
+
+	/**
 	 * Test get_frontend_filters().
 	 */
 	public function test_get_frontend_filters() {
 		$subject = $this->get_subject();
+		$this->check_filters( $subject->get_frontend_filters() );
+
+		// Check that at second time we have the same result.
 		$this->check_filters( $subject->get_frontend_filters() );
 	}
 
@@ -53,6 +80,14 @@ class Test_Filters extends KAGG_TestCase {
 	public function test_get_cli_filters() {
 		$subject = $this->get_subject();
 		$this->check_filters( $subject->get_cli_filters() );
+	}
+
+	/**
+	 * Test get_xml_rpc_filters().
+	 */
+	public function test_get_xml_rpc_filters() {
+		$subject = $this->get_subject();
+		$this->check_filters( $subject->get_xml_rpc_filters() );
 	}
 
 	/**
