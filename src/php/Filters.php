@@ -5,7 +5,7 @@
  * @package kagg/disable_plugins
  */
 
-namespace KAGG\Disable_Plugins;
+namespace KAGG\DisablePlugins;
 
 /**
  * Class Filters

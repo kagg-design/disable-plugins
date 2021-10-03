@@ -5,15 +5,15 @@
  * @package kagg/disable_plugins
  */
 
-use KAGG\KAGG_TestCase;
-use KAGG\Disable_Plugins\Filters;
+use KAGG\DisablePlugins\Filters;
+use KAGG\DisablePlugins\Tests\Unit\KAGGTestCase;
 
 /**
  * Class Test_Filters
  *
  * @group filters
  */
-class Test_Filters extends KAGG_TestCase {
+class FiltersTest extends KAGGTestCase {
 
 	/**
 	 * Test get_frontend_filters() with wrong filter filename.

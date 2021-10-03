@@ -11,7 +11,7 @@ use tad\FunctionMocker\FunctionMocker;
  * Test constants.
  */
 const PLUGIN_TESTS_DIR = __DIR__;
-define( 'PLUGIN_MAIN_FILE', dirname( dirname( __DIR__ ) ) . '/disable-plugins.php' );
+define( 'PLUGIN_MAIN_FILE', dirname( dirname( dirname( __DIR__ ) ) ) . '/disable-plugins.php' );
 define( 'PLUGIN_PATH', dirname( PLUGIN_MAIN_FILE ) );
 
 /**
@@ -30,7 +30,7 @@ FunctionMocker::init(
 		],
 		'whitelist'             => [
 			realpath( PLUGIN_PATH . '/disable-plugins.php' ),
-			realpath( PLUGIN_PATH . '/includes' ),
+			realpath( PLUGIN_PATH . '/src/php' ),
 		],
 		'redefinable-internals' => [
 			'defined',

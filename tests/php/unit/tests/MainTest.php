@@ -11,22 +11,15 @@
 
 // phpcs:enable Generic.Commenting.DocComment.MissingShort
 
-use KAGG\Disable_Plugins\Filters;
-
-/**
- * Test_Main class file
- *
- * @package kagg/disable_plugins
- */
-
-use KAGG\KAGG_TestCase;
-use KAGG\Disable_Plugins\Main;
+use KAGG\DisablePlugins\Filters;
+use KAGG\DisablePlugins\Main;
+use KAGG\DisablePlugins\Tests\Unit\KAGGTestCase;
 use tad\FunctionMocker\FunctionMocker;
 
 /**
- * Class Test_Main
+ * Class MainTest
  */
-class Test_Main extends KAGG_TestCase {
+class MainTest extends KAGGTestCase {
 
 	/**
 	 * Finalise test
@@ -179,7 +172,7 @@ class Test_Main extends KAGG_TestCase {
 		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_frontend_filters' )->andReturn( $filters );
 
-		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
+		$subject = Mockery::mock( '\KAGG\DisablePlugins\Main[is_rest]', [ $filters_instance ] )
 			->shouldAllowMockingProtectedMethods();
 		$subject->shouldReceive( 'is_rest' )->andReturn( false );
 		$this->assertSame( $expected, $subject->disable( $plugins ) );
@@ -330,7 +323,7 @@ class Test_Main extends KAGG_TestCase {
 		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_backend_filters' )->andReturn( $filters );
 
-		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
+		$subject = Mockery::mock( '\KAGG\DisablePlugins\Main[is_rest]', [ $filters_instance ] )
 			->shouldAllowMockingProtectedMethods();
 		$subject->shouldReceive( 'is_rest' )->andReturn( false );
 		$this->assertSame( $expected, $subject->disable( $plugins ) );
@@ -523,7 +516,7 @@ class Test_Main extends KAGG_TestCase {
 
 		WP_Mock::userFunction( 'admin_url' )->andReturn( 'https://www.example.com/wp-admin/' );
 
-		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
+		$subject = Mockery::mock( '\KAGG\DisablePlugins\Main[is_rest]', [ $filters_instance ] )
 			->shouldAllowMockingProtectedMethods();
 		$subject->shouldReceive( 'is_rest' )->andReturn( false );
 		$this->assertSame( $expected, $subject->disable( $plugins ) );
@@ -648,7 +641,7 @@ class Test_Main extends KAGG_TestCase {
 
 		WP_Mock::userFunction( 'admin_url' )->andReturn( 'https://www.example.com/wp-admin/' );
 
-		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
+		$subject = Mockery::mock( '\KAGG\DisablePlugins\Main[is_rest]', [ $filters_instance ] )
 			->shouldAllowMockingProtectedMethods();
 		$subject->shouldReceive( 'is_rest' )->andReturn( false );
 		$this->assertSame( $expected, $subject->disable( $plugins ) );
@@ -696,7 +689,7 @@ class Test_Main extends KAGG_TestCase {
 			}
 		);
 
-		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[get_rest_route]', [ $filters_instance ] )
+		$subject = Mockery::mock( '\KAGG\DisablePlugins\Main[get_rest_route]', [ $filters_instance ] )
 			->shouldAllowMockingProtectedMethods();
 		$subject->shouldReceive( 'get_rest_route' )->andReturn( $rest_route );
 		$this->assertSame( $expected, $subject->disable( $plugins ) );
@@ -745,7 +738,7 @@ class Test_Main extends KAGG_TestCase {
 			}
 		);
 
-		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[get_rest_route,disable_on_frontend]', [ $filters_instance ] )
+		$subject = Mockery::mock( '\KAGG\DisablePlugins\Main[get_rest_route,disable_on_frontend]', [ $filters_instance ] )
 			->shouldAllowMockingProtectedMethods();
 		$subject->shouldReceive( 'get_rest_route' )->andReturn( $rest_route );
 		$subject->shouldReceive( 'disable_on_frontend' )->with( $plugins )->andReturn( $plugins );
@@ -868,7 +861,7 @@ class Test_Main extends KAGG_TestCase {
 			$GLOBALS['argv'] = explode( ' ', 'wp ' . $command );
 		}
 
-		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
+		$subject = Mockery::mock( '\KAGG\DisablePlugins\Main[is_rest]', [ $filters_instance ] )
 			->shouldAllowMockingProtectedMethods();
 		$subject->shouldReceive( 'is_rest' )->andReturn( false );
 		$this->assertSame( $expected, $subject->disable( $plugins ) );
@@ -1014,7 +1007,7 @@ class Test_Main extends KAGG_TestCase {
 			$GLOBALS['HTTP_RAW_POST_DATA'] = str_replace( 'someMethod', $method, $http_raw_post_data );
 		}
 
-		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest,is_cli]', [ $filters_instance ] )
+		$subject = Mockery::mock( '\KAGG\DisablePlugins\Main[is_rest,is_cli]', [ $filters_instance ] )
 			->shouldAllowMockingProtectedMethods();
 		$subject->shouldReceive( 'is_rest' )->andReturn( false );
 		$subject->shouldReceive( 'is_cli' )->andReturn( false );

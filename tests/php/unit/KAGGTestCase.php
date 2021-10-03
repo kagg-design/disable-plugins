@@ -1,20 +1,20 @@
 <?php
 /**
- * KAGG_TestCase class file.
+ * KAGGTestCase class file.
  *
  * @package kagg/disable_plugins
  */
 
-namespace KAGG;
+namespace KAGG\DisablePlugins\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use tad\FunctionMocker\FunctionMocker;
 use WP_Mock;
 
 /**
- * Class KAGG_TestCase
+ * Class KAGGTestCase
  */
-abstract class KAGG_TestCase extends TestCase {
+abstract class KAGGTestCase extends TestCase {
 	/**
 	 * Setup test
 	 */
