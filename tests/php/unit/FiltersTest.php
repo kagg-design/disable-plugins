@@ -5,8 +5,9 @@
  * @package kagg/disable_plugins
  */
 
+namespace KAGG\DisablePlugins\Tests\Unit;
+
 use KAGG\DisablePlugins\Filters;
-use KAGG\DisablePlugins\Tests\Unit\KAGGTestCase;
 
 /**
  * Class Test_Filters

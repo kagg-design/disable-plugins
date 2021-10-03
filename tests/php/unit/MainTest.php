@@ -11,10 +11,13 @@
 
 // phpcs:enable Generic.Commenting.DocComment.MissingShort
 
+namespace KAGG\DisablePlugins\Tests\Unit;
+
 use KAGG\DisablePlugins\Filters;
 use KAGG\DisablePlugins\Main;
-use KAGG\DisablePlugins\Tests\Unit\KAGGTestCase;
+use Mockery;
 use tad\FunctionMocker\FunctionMocker;
+use WP_Mock;
 
 /**
  * Class MainTest
@@ -23,6 +26,9 @@ class MainTest extends KAGGTestCase {
 
 	/**
 	 * Finalise test
+	 *
+	 * @noinspection PhpLanguageLevelInspection
+	 * @noinspection PhpUndefinedClassInspection
 	 */
 	public function tearDown(): void {
 		unset(
@@ -454,7 +460,8 @@ class MainTest extends KAGGTestCase {
 
 		$_REQUEST['_wp_http_referer'] = $referer;
 		unset( $_SERVER['HTTP_REFERER'] );
-		$_POST['action']            = $action;
+
+		$_POST['action'] = $action;
 
 		WP_Mock::passthruFunction( 'wp_unslash' );
 		WP_Mock::userFunction( 'admin_url' )->andReturn( $referer );
@@ -501,7 +508,6 @@ class MainTest extends KAGGTestCase {
 		}
 
 		$_POST['action'] = $action;
-
 
 		FunctionMocker::replace(
 			'filter_input',
