@@ -34,14 +34,14 @@ class Test_Main extends KAGG_TestCase {
 	public function tearDown(): void {
 		unset(
 			$_SERVER['REQUEST_URI'],
-			$_SERVER['SCRIPT_FILENAME'],
 			// phpcs:disable WordPress.Security.NonceVerification.Recommended
 			$_GET['rest_route'],
+			$_GET['wc-ajax'],
 			$_REQUEST['_wp_http_referer'],
 			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 			$GLOBALS['HTTP_RAW_POST_DATA'],
 			$GLOBALS['wp_rewrite'],
-			$GLOBALS['argv']
+			$GLOBALS['argv'],
 		);
 
 		parent::tearDown();
@@ -461,7 +461,6 @@ class Test_Main extends KAGG_TestCase {
 
 		$_REQUEST['_wp_http_referer'] = $referer;
 		unset( $_SERVER['HTTP_REFERER'] );
-		$_SERVER['SCRIPT_FILENAME'] = 'admin-ajax.php';
 		$_POST['action']            = $action;
 
 		WP_Mock::passthruFunction( 'wp_unslash' );
@@ -476,45 +475,6 @@ class Test_Main extends KAGG_TestCase {
 
 		$this->assertSame( $plugins, $subject->disable( $plugins ) );
 
-		unset( $_SERVER['SCRIPT_FILENAME'] );
-		$this->assertSame( $plugins, $subject->disable( $plugins ) );
-	}
-
-	/**
-	 * It does nothing on ajax if script filename no admin-ajax.php
-	 *
-	 * @test
-	 */
-	public function it_does_nothing_on_ajax_if_script_is_NOT_admin_ajax() {
-		$referer = 'https://www.example.com/some-page/';
-		$action  = 'my-action';
-
-		$plugins = [ 'sitepress-multilingual-cms/sitepress.php' ];
-
-		$filters = [
-			[
-				'patterns'         => [ $action ],
-				'disabled_plugins' => [
-					'sitepress-multilingual-cms/sitepress.php',
-				],
-			],
-		];
-
-		$filters_instance = Mockery::mock( Filters::class );
-		$filters_instance->shouldReceive( 'get_ajax_filters' )->andReturn( $filters );
-
-		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
-		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
-		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( true );
-		WP_Mock::passthruFunction( 'wp_cache_set' );
-
-		$_REQUEST['_wp_http_referer'] = $referer;
-		$_POST['action']              = $action;
-
-		WP_Mock::passthruFunction( 'wp_unslash' );
-		WP_Mock::userFunction( 'admin_url' )->andReturn( 'https://www.example.com/wp-admin/' );
-
-		$subject = new Main( $filters_instance );
 		$this->assertSame( $plugins, $subject->disable( $plugins ) );
 	}
 
@@ -540,14 +500,27 @@ class Test_Main extends KAGG_TestCase {
 		WP_Mock::passthruFunction( 'wp_cache_set' );
 
 		$_REQUEST['_wp_http_referer'] = $referer;
-		$_SERVER['SCRIPT_FILENAME']   = 'admin-ajax.php';
+
 		if ( is_array( $filters ) && isset( $filters[ count( $filters ) - 1 ]['patterns'] ) ) {
-			$_POST['action'] = $filters[ count( $filters ) - 1 ]['patterns'][0];
+			$action = $filters[ count( $filters ) - 1 ]['patterns'][0];
 		} else {
-			$_POST['action'] = 'my-action';
+			$action = 'my-action';
 		}
 
-		WP_Mock::passthruFunction( 'wp_unslash' );
+		$_POST['action'] = $action;
+
+
+		FunctionMocker::replace(
+			'filter_input',
+			function( $type, $var_name, $filter ) use ( $action ) {
+				if ( INPUT_POST === $type && 'action' === $var_name && FILTER_SANITIZE_STRING === $filter ) {
+					return $action;
+				}
+
+				return null;
+			}
+		);
+
 		WP_Mock::userFunction( 'admin_url' )->andReturn( 'https://www.example.com/wp-admin/' );
 
 		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
@@ -630,6 +603,55 @@ class Test_Main extends KAGG_TestCase {
 				[ 'sitepress-multilingual-cms/sitepress.php', 'wpml-string-translation/plugin.php' ],
 			],
 		];
+	}
+
+	/**
+	 * It disables plugins on WooCommerce ajax
+	 *
+	 * @param array $plugins  Plugins.
+	 * @param array $filters  Filters.
+	 * @param array $expected Expected result.
+	 *
+	 * @test
+	 * @dataProvider        dp_it_disables_plugins_on_ajax
+	 */
+	public function it_disables_plugins_on_wc_ajax( $plugins, $filters, $expected ) {
+		$referer = 'https://www.example.com/some-page/';
+
+		$filters_instance = Mockery::mock( Filters::class );
+		$filters_instance->shouldReceive( 'get_ajax_filters' )->andReturn( $filters );
+
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
+		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
+		WP_Mock::passthruFunction( 'wp_cache_set' );
+
+		$_REQUEST['_wp_http_referer'] = $referer;
+
+		if ( is_array( $filters ) && isset( $filters[ count( $filters ) - 1 ]['patterns'] ) ) {
+			$action = $filters[ count( $filters ) - 1 ]['patterns'][0];
+		} else {
+			$action = 'my-action';
+		}
+
+		$_GET['wc-ajax'] = $action;
+
+		FunctionMocker::replace(
+			'filter_input',
+			function( $type, $var_name, $filter ) use ( $action ) {
+				if ( INPUT_GET === $type && 'wc-ajax' === $var_name && FILTER_SANITIZE_STRING === $filter ) {
+					return $action;
+				}
+
+				return null;
+			}
+		);
+
+		WP_Mock::userFunction( 'admin_url' )->andReturn( 'https://www.example.com/wp-admin/' );
+
+		$subject = Mockery::mock( '\KAGG\Disable_Plugins\Main[is_rest]', [ $filters_instance ] )
+			->shouldAllowMockingProtectedMethods();
+		$subject->shouldReceive( 'is_rest' )->andReturn( false );
+		$this->assertSame( $expected, $subject->disable( $plugins ) );
 	}
 
 	/**

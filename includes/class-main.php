@@ -24,6 +24,11 @@ class Main {
 	const CACHE_GROUP = 'kagg_disable_plugins';
 
 	/**
+	 * WooCommerce ajax $_GET argument.
+	 */
+	const WC_AJAX = 'wc-ajax';
+
+	/**
 	 * Instance of class Filters, providing plugin filters
 	 *
 	 * @var Filters $filters
@@ -84,8 +89,10 @@ class Main {
 			return $allowed_plugins;
 		}
 
-		if ( wp_doing_ajax() ) {
+		if ( $this->is_ajax() ) {
 			$allowed_plugins = $this->disable_on_ajax( $plugins );
+		} elseif ( $this->is_wc_ajax() ) {
+			$allowed_plugins = $this->disable_on_wc_ajax( $plugins );
 		} elseif ( is_admin() ) {
 			$allowed_plugins = $this->disable_on_backend( $plugins );
 		} elseif ( $this->is_rest() ) {
@@ -153,14 +160,24 @@ class Main {
 	 * @return array
 	 */
 	private function disable_on_ajax( $plugins ) {
-		// @phpcs:disable WordPress.Security.NonceVerification.Missing
-		if ( ! isset( $_POST['action'] ) || ! $this->is_frontend_ajax() ) {
-			return $plugins;
-		}
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		$action = isset( $_POST['action'] ) ?
+			filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING ) :
+			'';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
-		$action = filter_var( wp_unslash( $_POST['action'] ), FILTER_SANITIZE_STRING );
+		return $this->filter_plugins( $plugins, $action, $this->filters->get_ajax_filters() );
+	}
 
-		// @phpcs:enable WordPress.Security.NonceVerification.Missing
+	/**
+	 * Disable plugins on WooCommerce ajax
+	 *
+	 * @param array $plugins Plugins.
+	 *
+	 * @return array
+	 */
+	private function disable_on_wc_ajax( $plugins ) {
+		$action = filter_input( INPUT_GET, self::WC_AJAX, FILTER_SANITIZE_STRING );
 
 		return $this->filter_plugins( $plugins, $action, $this->filters->get_ajax_filters() );
 	}
@@ -278,18 +295,34 @@ class Main {
 		if ( isset( $_REQUEST['_wp_http_referer'] ) ) {
 			$ref = filter_var( wp_unslash( $_REQUEST['_wp_http_referer'] ), FILTER_SANITIZE_STRING );
 		}
+
 		if ( ! $ref && isset( $_SERVER['HTTP_REFERER'] ) ) {
 			$ref = filter_var( wp_unslash( $_SERVER['HTTP_REFERER'] ), FILTER_SANITIZE_STRING );
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-		if ( ! isset( $_SERVER['SCRIPT_FILENAME'] ) ) {
-			return false;
-		}
-		$script_filename = filter_var( wp_unslash( $_SERVER['SCRIPT_FILENAME'] ), FILTER_SANITIZE_STRING );
+		// If referer does not contain admin URL, this is likely a frontend AJAX request.
+		return strpos( $ref, admin_url() ) === false;
+	}
 
-		// If referer does not contain admin URL, and we are using the admin-ajax.php endpoint, this is likely a frontend AJAX request.
-		return ( strpos( $ref, admin_url() ) === false ) && ( basename( $script_filename ) === 'admin-ajax.php' );
+	/**
+	 * Check of it is a frontend ajax request
+	 *
+	 * @return bool
+	 */
+	protected function is_ajax() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		return wp_doing_ajax() && $this->is_frontend_ajax();
+	}
+
+	/**
+	 * Check of it is a frontend WooCommerce ajax request
+	 *
+	 * @return bool
+	 */
+	protected function is_wc_ajax() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		return ! empty( $_GET[ self::WC_AJAX ] ) && $this->is_frontend_ajax();
 	}
 
 	/**
