@@ -1,6 +1,6 @@
 # WordPress Plugin Disable Plugins
 
-Disable Plugins allows disabling unneeded plugins on certain urls/ajax/wp-cli/xml-rpc calls to improve site performance.
+Disable Plugins allows disabling unneeded plugins on certain urls/ajax/wc-ajax/wp-cli/xml-rpc calls to improve site performance.
 
 # Description
 
@@ -99,9 +99,9 @@ Filters to have the following structure
 ]
 ```
 
-where `patterns` is an array of regular expressions to compare with page slug (for frontend filters), ajax action (for ajax filters), xml-rpc function (for xml-rpc filters) etc.
+where `patterns` is an array of regular expressions to compare with page slug (for frontend filters), ajax or WooCommerce ajax action (for ajax filters), xml-rpc function (for xml-rpc filters) etc.
 
-`locations` is an array of locations. Allowed locations are `frontend`, `backend`, `ajax`, `rest`, `cli`, `xml-rpc`. Functionality for rest location will be added in the nearest future.
+`locations` is an array of locations. Allowed locations are `frontend`, `backend`, `ajax`, `rest`, `cli`, `xml-rpc`.
 
 `disabled_plugins` can contain the list of plugins to disable.
 
