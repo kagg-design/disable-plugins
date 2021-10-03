@@ -17,6 +17,9 @@ use WP_Mock;
 abstract class KAGGTestCase extends TestCase {
 	/**
 	 * Setup test
+	 *
+	 * @noinspection PhpLanguageLevelInspection
+	 * @noinspection PhpUndefinedClassInspection
 	 */
 	public function setUp(): void {
 		FunctionMocker::setUp();
@@ -26,6 +29,9 @@ abstract class KAGGTestCase extends TestCase {
 
 	/**
 	 * End test
+	 *
+	 * @noinspection PhpLanguageLevelInspection
+	 * @noinspection PhpUndefinedClassInspection
 	 */
 	public function tearDown(): void {
 		WP_Mock::tearDown();

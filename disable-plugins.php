@@ -13,7 +13,7 @@
  * @package kagg/disable_plugins
  */
 
-namespace KAGG\Disable_Plugins;
+namespace KAGG\DisablePlugins;
 
 define( 'KAGG_DISABLE_PLUGINS_PATH', __DIR__ . '/disable-plugins' );
 
