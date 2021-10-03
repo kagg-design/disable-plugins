@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Disable Plugins
  * Description: MU-Plugin to disable some plugins under certain conditions.
- * Version: 1.2
+ * Version: 1.3
  * Author: KAGG Design
  * Author URI: https://kagg.eu/en/
  * License: GPL2
@@ -22,5 +22,4 @@ define( 'KAGG_DISABLE_PLUGINS_PATH', __DIR__ . '/disable-plugins' );
  */
 require_once KAGG_DISABLE_PLUGINS_PATH . '/vendor/autoload.php';
 
-$filters = new Filters();
-( new Main( $filters ) )->init();
+( new Main( new Filters() ) )->init();
