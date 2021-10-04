@@ -2,10 +2,10 @@
   "name": "kagg/disable_plugins",
   "description": "MU-Plugin to disable plugins under certain conditions",
   "license": "GPL-2.0-or-later",
-  "homepage": "https://github.com/kagg-design/disable-plugins",
   "keywords": [
     "disable plugins"
   ],
+  "homepage": "https://github.com/kagg-design/disable-plugins",
   "type": "wordpress-plugin",
   "authors": [
     {
@@ -19,11 +19,6 @@
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "config": {
-    "platform": {
-      "php": "5.6"
-    }
-  },
   "require": {
     "ext-json": "*",
     "ext-mbstring": "*"
@@ -48,5 +43,15 @@
       "KAGG\\DisablePlugins\\": "src/php",
       "KAGG\\DisablePlugins\\Tests\\Unit\\": "tests/php/unit"
     }
+  },
+  "bin": [
+    "bin/update-tests"
+  ],
+  "scripts": {
+    "pre-update-cmd": "update-tests",
+    "update-tests": "update-tests",
+    "revert-tests": "update-tests revert",
+    "phpcs": "vendor/bin/phpcs --colors",
+    "unit": "vendor/bin/phpunit"
   }
 }

@@ -13,9 +13,7 @@
 		</include>
 		<exclude>
 			<directory>.github</directory>
-			<directory>.make</directory>
-			<directory>assets</directory>
-			<directory>languages</directory>
+			<directory>bin</directory>
 			<directory>tests</directory>
 			<directory>vendor</directory>
 		</exclude>
