@@ -8,7 +8,7 @@
 // phpcs:disable Generic.Commenting.DocComment.MissingShort
 /** @noinspection PhpParamsInspection */
 /** @noinspection PhpUndefinedMethodInspection */
-
+/** @noinspection PhpMethodParametersCountMismatchInspection */
 // phpcs:enable Generic.Commenting.DocComment.MissingShort
 
 namespace KAGG\DisablePlugins\Tests\Unit;
@@ -29,8 +29,10 @@ class MainTest extends KAGGTestCase {
 	 *
 	 * @noinspection PhpLanguageLevelInspection
 	 * @noinspection PhpUndefinedClassInspection
+	 * phpcs:disable PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound
 	 */
 	public function tearDown(): void {
+		// phpcs:enable PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound
 		unset(
 			$_SERVER['REQUEST_URI'],
 			// phpcs:disable WordPress.Security.NonceVerification.Recommended
@@ -40,7 +42,7 @@ class MainTest extends KAGGTestCase {
 			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 			$GLOBALS['HTTP_RAW_POST_DATA'],
 			$GLOBALS['wp_rewrite'],
-			$GLOBALS['argv'],
+			$GLOBALS['argv']
 		);
 
 		parent::tearDown();

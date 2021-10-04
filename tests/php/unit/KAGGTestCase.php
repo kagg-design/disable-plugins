@@ -20,8 +20,10 @@ abstract class KAGGTestCase extends TestCase {
 	 *
 	 * @noinspection PhpLanguageLevelInspection
 	 * @noinspection PhpUndefinedClassInspection
+	 * phpcs:disable PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound
 	 */
 	public function setUp(): void {
+		// phpcs:enable PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound
 		FunctionMocker::setUp();
 		parent::setUp();
 		WP_Mock::setUp();
@@ -32,8 +34,10 @@ abstract class KAGGTestCase extends TestCase {
 	 *
 	 * @noinspection PhpLanguageLevelInspection
 	 * @noinspection PhpUndefinedClassInspection
+	 * phpcs:disable PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound
 	 */
 	public function tearDown(): void {
+		// phpcs:enable PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound
 		WP_Mock::tearDown();
 		parent::tearDown();
 		FunctionMocker::tearDown();
