@@ -5,7 +5,7 @@
 #   update-tests x.x - to update tests according to the phpunit library used for specific php version x.x, where x.x = 5.6|7.0|7.1|7.2|7.3|7.4|8.0.
 
 # Directory with phpunit tests.
-TEST_DIR=".tests"
+TEST_DIR="tests"
 
 if grep -q Microsoft /proc/version; then
   DEV_MODE=$(cmd.exe /c echo %COMPOSER_DEV_MODE% | sed -nr 's/\r//p')
