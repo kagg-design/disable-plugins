@@ -48,7 +48,8 @@
   },
   {
     "patterns": [
-      "wpv_get_archive_query_results"
+      "wpv_get_archive_query_results",
+      "add_to_cart"
     ],
     "locations": [
       "ajax"
