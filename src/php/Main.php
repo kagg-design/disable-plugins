@@ -129,7 +129,7 @@ class Main {
 			return $plugins;
 		}
 
-		$uri  = filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_STRING );
+		$uri  = filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		$slug = urldecode( trailingslashit( wp_parse_url( $uri, PHP_URL_PATH ) ) );
 
 		return $this->filter_plugins( $plugins, $slug, $this->filters->get_frontend_filters() );
@@ -147,7 +147,7 @@ class Main {
 			return $plugins;
 		}
 
-		$uri = filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_STRING );
+		$uri = filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		return $this->filter_plugins( $plugins, $uri, $this->filters->get_backend_filters() );
 	}
@@ -162,7 +162,7 @@ class Main {
 	private function disable_on_ajax( $plugins ) {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		$action = isset( $_POST['action'] ) ?
-			filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING ) :
+			filter_input( INPUT_POST, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) :
 			'';
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
@@ -177,7 +177,7 @@ class Main {
 	 * @return array
 	 */
 	private function disable_on_wc_ajax( $plugins ) {
-		$action = filter_input( INPUT_GET, self::WC_AJAX, FILTER_SANITIZE_STRING );
+		$action = filter_input( INPUT_GET, self::WC_AJAX, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		return $this->filter_plugins( $plugins, $action, $this->filters->get_ajax_filters() );
 	}
@@ -293,11 +293,11 @@ class Main {
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_REQUEST['_wp_http_referer'] ) ) {
-			$ref = filter_var( wp_unslash( $_REQUEST['_wp_http_referer'] ), FILTER_SANITIZE_STRING );
+			$ref = filter_var( wp_unslash( $_REQUEST['_wp_http_referer'] ), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		}
 
 		if ( ! $ref && isset( $_SERVER['HTTP_REFERER'] ) ) {
-			$ref = filter_var( wp_unslash( $_SERVER['HTTP_REFERER'] ), FILTER_SANITIZE_STRING );
+			$ref = filter_var( wp_unslash( $_SERVER['HTTP_REFERER'] ), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
@@ -368,7 +368,7 @@ class Main {
 		// Case #2.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$rest_route = isset( $_GET['rest_route'] ) ?
-			filter_input( INPUT_GET, 'rest_route', FILTER_SANITIZE_STRING ) :
+			filter_input( INPUT_GET, 'rest_route', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) :
 			'';
 
 		if ( $rest_route ) {
