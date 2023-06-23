@@ -513,8 +513,8 @@ class MainTest extends KAGGTestCase {
 
 		FunctionMocker::replace(
 			'filter_input',
-			function( $type, $var_name, $filter ) use ( $action ) {
-				if ( INPUT_POST === $type && 'action' === $var_name && FILTER_SANITIZE_STRING === $filter ) {
+			static function( $type, $var_name, $filter ) use ( $action ) {
+				if ( INPUT_POST === $type && 'action' === $var_name && FILTER_SANITIZE_FULL_SPECIAL_CHARS === $filter ) {
 					return $action;
 				}
 
@@ -527,6 +527,7 @@ class MainTest extends KAGGTestCase {
 		$subject = Mockery::mock( '\KAGG\DisablePlugins\Main[is_rest]', [ $filters_instance ] )
 			->shouldAllowMockingProtectedMethods();
 		$subject->shouldReceive( 'is_rest' )->andReturn( false );
+
 		$this->assertSame( $expected, $subject->disable( $plugins ) );
 	}
 
@@ -639,7 +640,7 @@ class MainTest extends KAGGTestCase {
 		FunctionMocker::replace(
 			'filter_input',
 			function( $type, $var_name, $filter ) use ( $action ) {
-				if ( INPUT_GET === $type && 'wc-ajax' === $var_name && FILTER_SANITIZE_STRING === $filter ) {
+				if ( INPUT_GET === $type && 'wc-ajax' === $var_name && FILTER_SANITIZE_FULL_SPECIAL_CHARS === $filter ) {
 					return $action;
 				}
 
@@ -738,7 +739,7 @@ class MainTest extends KAGGTestCase {
 		FunctionMocker::replace(
 			'filter_input',
 			static function ( $type, $var_name, $filter ) use ( $rest_route ) {
-				if ( INPUT_GET === $type && 'rest_route' === $var_name && FILTER_SANITIZE_STRING === $filter ) {
+				if ( INPUT_GET === $type && 'rest_route' === $var_name && FILTER_SANITIZE_FULL_SPECIAL_CHARS === $filter ) {
 					return $rest_route;
 				}
 
