@@ -967,6 +967,7 @@ class MainTest extends KAGGTestCase {
 	public function it_disables_plugins_on_xml_rpc( $plugins, $filters, $expected ) {
 		$http_raw_post_data = '
 ';
+
 		$http_raw_post_data .= '<?xml version="1.0"?>
 <methodCall>
     <methodName>someMethod</methodName>
