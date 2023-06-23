@@ -16,6 +16,7 @@ namespace KAGG\DisablePlugins\Tests\Unit;
 use KAGG\DisablePlugins\Filters;
 use KAGG\DisablePlugins\Main;
 use Mockery;
+use ReflectionException;
 use tad\FunctionMocker\FunctionMocker;
 use WP_Mock;
 
@@ -639,7 +640,7 @@ class MainTest extends KAGGTestCase {
 
 		FunctionMocker::replace(
 			'filter_input',
-			function( $type, $var_name, $filter ) use ( $action ) {
+			static function( $type, $var_name, $filter ) use ( $action ) {
 				if ( INPUT_GET === $type && 'wc-ajax' === $var_name && FILTER_SANITIZE_FULL_SPECIAL_CHARS === $filter ) {
 					return $action;
 				}
@@ -965,7 +966,8 @@ class MainTest extends KAGGTestCase {
 	 */
 	public function it_disables_plugins_on_xml_rpc( $plugins, $filters, $expected ) {
 		$http_raw_post_data = '
-<?xml version="1.0"?>
+';
+		$http_raw_post_data .= '<?xml version="1.0"?>
 <methodCall>
     <methodName>someMethod</methodName>
     <params>
@@ -1107,6 +1109,7 @@ class MainTest extends KAGGTestCase {
 	 *
 	 * @test
 	 * @dataProvider dp_it_gets_rest_route
+	 * @throws ReflectionException Reflection exception.
 	 */
 	public function it_gets_rest_route( $current_path, $expected ) {
 		$current_url = 'https://test.test' . $current_path;
@@ -1126,8 +1129,10 @@ class MainTest extends KAGGTestCase {
 		WP_Mock::userFunction( 'wp_parse_url' )->with( $rest_url, PHP_URL_PATH )->andReturn( $rest_path );
 
 		$subject = Mockery::mock( Main::class )->makePartial();
+		$method  = 'get_rest_route';
+		$this->set_method_accessibility( $subject, $method );
 
-		self::assertSame( $expected, $subject->get_rest_route() );
+		self::assertSame( $expected, $subject->$method() );
 	}
 
 	/**
