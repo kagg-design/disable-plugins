@@ -19,7 +19,7 @@ class Filters {
 	 *
 	 * @var string
 	 */
-	private $filters_filename = __DIR__ . '/../../filters.json';
+	private $filters_filename = __DIR__ . '/../../../filters.json';
 
 	/**
 	 * All filters
