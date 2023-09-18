@@ -73,7 +73,7 @@ class Main {
 	/**
 	 * Disable plugins
 	 *
-	 * @param array $plugins Plugins.
+	 * @param array|mixed $plugins Plugins.
 	 *
 	 * @return array|mixed
 	 */
@@ -124,7 +124,7 @@ class Main {
 	 *
 	 * @return array
 	 */
-	protected function disable_on_frontend( $plugins ) {
+	protected function disable_on_frontend( array $plugins ): array {
 		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
 			return $plugins;
 		}
@@ -142,7 +142,7 @@ class Main {
 	 *
 	 * @return array
 	 */
-	private function disable_on_backend( $plugins ) {
+	private function disable_on_backend( array $plugins ): array {
 		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
 			return $plugins;
 		}
@@ -159,7 +159,7 @@ class Main {
 	 *
 	 * @return array
 	 */
-	private function disable_on_ajax( $plugins ) {
+	private function disable_on_ajax( array $plugins ): array {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		$action = isset( $_POST['action'] ) ?
 			filter_input( INPUT_POST, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) :
@@ -176,7 +176,7 @@ class Main {
 	 *
 	 * @return array
 	 */
-	private function disable_on_wc_ajax( $plugins ) {
+	private function disable_on_wc_ajax( array $plugins ): array {
 		$action = filter_input( INPUT_GET, self::WC_AJAX, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		return $this->filter_plugins( $plugins, $action, $this->filters->get_ajax_filters() );
@@ -189,7 +189,7 @@ class Main {
 	 *
 	 * @return array
 	 */
-	private function disable_on_rest( $plugins ) {
+	private function disable_on_rest( array $plugins ): array {
 		return $this->filter_plugins( $plugins, $this->rest_route, $this->filters->get_rest_filters() );
 	}
 
@@ -200,7 +200,7 @@ class Main {
 	 *
 	 * @return array
 	 */
-	private function disable_on_cli( $plugins ) {
+	private function disable_on_cli( array $plugins ): array {
 		$argv    = array_slice( $GLOBALS['argv'], 1 );
 		$command = implode( ' ', $argv );
 
@@ -214,7 +214,7 @@ class Main {
 	 *
 	 * @return array
 	 */
-	private function disable_on_xml_rpc( $plugins ) {
+	private function disable_on_xml_rpc( array $plugins ): array {
 		// Raw post data, set up in xmlrpc.php.
 		// phpcs:disable PHPCompatibility.Variables.RemovedPredefinedGlobalVariables.http_raw_post_dataDeprecatedRemoved
 		global $HTTP_RAW_POST_DATA;
@@ -238,8 +238,8 @@ class Main {
 	 *
 	 * @return array
 	 */
-	private function filter_plugins( $plugins, $current_pattern, $filters ) {
-		if ( ! $current_pattern || ! is_array( $filters ) ) {
+	private function filter_plugins( array $plugins, string $current_pattern, array $filters ): array {
+		if ( ! $current_pattern ) {
 			return $plugins;
 		}
 
@@ -288,7 +288,7 @@ class Main {
 	 *
 	 * @return bool
 	 */
-	private function is_frontend_ajax() {
+	private function is_frontend_ajax(): bool {
 		$ref = '';
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
@@ -310,7 +310,7 @@ class Main {
 	 *
 	 * @return bool
 	 */
-	protected function is_ajax() {
+	protected function is_ajax(): bool {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		return wp_doing_ajax() && $this->is_frontend_ajax();
 	}
@@ -320,7 +320,7 @@ class Main {
 	 *
 	 * @return bool
 	 */
-	protected function is_wc_ajax() {
+	protected function is_wc_ajax(): bool {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		return ! empty( $_GET[ self::WC_AJAX ] ) && $this->is_frontend_ajax();
 	}
@@ -331,13 +331,13 @@ class Main {
 	 *
 	 * @return string
 	 */
-	protected function get_rest_route() {
+	protected function get_rest_route(): string {
 		$current_path = wp_parse_url( add_query_arg( [] ), PHP_URL_PATH );
 		$rest_path    = wp_parse_url( trailingslashit( rest_url() ), PHP_URL_PATH );
 
 		$is_rest = 0 === strpos( $current_path, $rest_path );
 
-		return $is_rest ? substr( $current_path, strlen( $rest_path ) ) : '';
+		return $is_rest ? (string) substr( $current_path, strlen( $rest_path ) ) : '';
 	}
 
 	/**
@@ -353,7 +353,7 @@ class Main {
 	 * @return bool
 	 * @author matzeeable
 	 */
-	protected function is_rest() {
+	protected function is_rest(): bool {
 		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
 			return false;
 		}
@@ -398,7 +398,7 @@ class Main {
 	 *
 	 * @return bool
 	 */
-	protected function is_cli() {
+	protected function is_cli(): bool {
 		return defined( 'WP_CLI' ) && constant( 'WP_CLI' );
 	}
 
@@ -407,7 +407,7 @@ class Main {
 	 *
 	 * @return bool
 	 */
-	protected function is_xml_rpc() {
+	protected function is_xml_rpc(): bool {
 		return defined( 'XMLRPC_REQUEST' ) && constant( 'XMLRPC_REQUEST' );
 	}
 }

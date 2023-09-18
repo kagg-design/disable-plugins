@@ -19,7 +19,7 @@ class Filters {
 	 *
 	 * @var string
 	 */
-	private $filters_filename = __DIR__ . '/../../../filters.json';
+	private $filters_filename = KAGG_DISABLE_PLUGINS_PATH . '/../filters.json';
 
 	/**
 	 * All filters
@@ -33,7 +33,7 @@ class Filters {
 	 *
 	 * @param string $filters_filename Name of the file containing plugin filters.
 	 */
-	public function __construct( $filters_filename = '' ) {
+	public function __construct( string $filters_filename = '' ) {
 		if ( $filters_filename ) {
 			$this->filters_filename = $filters_filename;
 		}
@@ -44,7 +44,7 @@ class Filters {
 	 *
 	 * @return array
 	 */
-	public function get_frontend_filters() {
+	public function get_frontend_filters(): array {
 		return $this->get_filters_for_location( 'frontend' );
 	}
 
@@ -53,7 +53,7 @@ class Filters {
 	 *
 	 * @return array
 	 */
-	public function get_backend_filters() {
+	public function get_backend_filters(): array {
 		return $this->get_filters_for_location( 'backend' );
 	}
 
@@ -62,7 +62,7 @@ class Filters {
 	 *
 	 * @return array
 	 */
-	public function get_ajax_filters() {
+	public function get_ajax_filters(): array {
 		return $this->get_filters_for_location( 'ajax' );
 	}
 
@@ -71,7 +71,7 @@ class Filters {
 	 *
 	 * @return array
 	 */
-	public function get_rest_filters() {
+	public function get_rest_filters(): array {
 		return $this->get_filters_for_location( 'rest' );
 	}
 
@@ -80,7 +80,7 @@ class Filters {
 	 *
 	 * @return array
 	 */
-	public function get_cli_filters() {
+	public function get_cli_filters(): array {
 		return $this->get_filters_for_location( 'cli' );
 	}
 
@@ -89,7 +89,7 @@ class Filters {
 	 *
 	 * @return array
 	 */
-	public function get_xml_rpc_filters() {
+	public function get_xml_rpc_filters(): array {
 		return $this->get_filters_for_location( 'xml-rpc' );
 	}
 
@@ -100,13 +100,15 @@ class Filters {
 	 *
 	 * @return array
 	 */
-	private function get_filters_for_location( $location ) {
+	private function get_filters_for_location( string $location ): array {
 		$all_filters = $this->load_filters();
 		$filters     = [];
+
 		foreach ( $all_filters as $filter ) {
 			if ( ! isset( $filter['locations'] ) || ! is_array( $filter['locations'] ) ) {
 				continue;
 			}
+
 			if ( in_array( $location, $filter['locations'], true ) ) {
 				$filters[] = $filter;
 			}
