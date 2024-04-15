@@ -118,7 +118,7 @@ class Filters {
 	}
 
 	/**
-	 * Load full set of filters from json file
+	 * Load a full set of filters from json file
 	 *
 	 * @return array|false|mixed|object|string
 	 */

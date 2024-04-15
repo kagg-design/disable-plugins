@@ -11,8 +11,9 @@ use tad\FunctionMocker\FunctionMocker;
  * Test constants.
  */
 const PLUGIN_TESTS_DIR = __DIR__;
-define( 'PLUGIN_MAIN_FILE', dirname( dirname( dirname( __DIR__ ) ) ) . '/disable-plugins.php' );
+define( 'PLUGIN_MAIN_FILE', dirname( __DIR__, 3 ) . '/disable-plugins.php' );
 define( 'PLUGIN_PATH', dirname( PLUGIN_MAIN_FILE ) );
+const KAGG_DISABLE_PLUGINS_PATH = PLUGIN_PATH . '/disable-plugins';
 
 /**
  * Autoload test classes.

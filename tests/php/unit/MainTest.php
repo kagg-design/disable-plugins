@@ -6,9 +6,9 @@
  */
 
 // phpcs:disable Generic.Commenting.DocComment.MissingShort
-/** @noinspection PhpParamsInspection */
-/** @noinspection PhpUndefinedMethodInspection */
-/** @noinspection PhpMethodParametersCountMismatchInspection */
+/** @noinspection PhpParamsInspection PhpParamsInspection. */
+/** @noinspection PhpUndefinedMethodInspection PhpUndefinedMethodInspection. */
+/** @noinspection PhpMethodParametersCountMismatchInspection PhpMethodParametersCountMismatchInspection. */
 // phpcs:enable Generic.Commenting.DocComment.MissingShort
 
 namespace KAGG\DisablePlugins\Tests\Unit;
@@ -28,12 +28,10 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * Finalise test
 	 *
-	 * @noinspection PhpLanguageLevelInspection
-	 * @noinspection PhpUndefinedClassInspection
-	 * phpcs:disable PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound
+	 * @noinspection PhpLanguageLevelInspection PhpLanguageLevelInspection.
+	 * @noinspection PhpUndefinedClassInspection PhpUndefinedClassInspection.
 	 */
-	public function tearDown(): void {
-		// phpcs:enable PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound
+	public function tearDown(): void { // phpcs:ignore PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound
 		unset(
 			$_SERVER['REQUEST_URI'],
 			// phpcs:disable WordPress.Security.NonceVerification.Recommended
@@ -53,7 +51,7 @@ class MainTest extends KAGGTestCase {
 	 * It inits
 	 *
 	 * @test
-	 * @noinspection PhpUndefinedMethodInspection
+	 * @noinspection PhpUndefinedMethodInspection PhpUndefinedMethodInspection.
 	 */
 	public function it_inits() {
 		$subject = Mockery::mock( Main::class )->makePartial();
@@ -73,9 +71,9 @@ class MainTest extends KAGGTestCase {
 		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
-		WP_Mock::expectFilterAdded( 'option_active_plugins', [ $subject, 'disable' ], - PHP_INT_MAX );
-		WP_Mock::expectFilterAdded( 'option_hack_file', [ $subject, 'remove_plugin_filters' ], - PHP_INT_MAX );
-		WP_Mock::expectActionAdded( 'plugins_loaded', [ $subject, 'remove_plugin_filters' ], - PHP_INT_MAX );
+		WP_Mock::expectFilterAdded( 'option_active_plugins', [ $subject, 'disable' ], -PHP_INT_MAX );
+		WP_Mock::expectFilterAdded( 'option_hack_file', [ $subject, 'remove_plugin_filters' ], -PHP_INT_MAX );
+		WP_Mock::expectActionAdded( 'plugins_loaded', [ $subject, 'remove_plugin_filters' ], -PHP_INT_MAX );
 
 		$subject->add_hooks();
 
@@ -83,7 +81,7 @@ class MainTest extends KAGGTestCase {
 			'remove_filter',
 			[
 				'times' => 1,
-				'args'  => [ 'option_active_plugins', [ $subject, 'disable' ], - PHP_INT_MAX ],
+				'args'  => [ 'option_active_plugins', [ $subject, 'disable' ], -PHP_INT_MAX ],
 			]
 		);
 
@@ -147,9 +145,9 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * It disables plugins on frontend
 	 *
-	 * @param array $plugins  Plugins.
-	 * @param array $filters  Filters.
-	 * @param array $expected Expected result.
+	 * @param array|mixed $plugins  Plugins.
+	 * @param array|mixed $filters  $filters  Filters.
+	 * @param array|mixed $expected Expected result.
 	 *
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_frontend
@@ -190,7 +188,7 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * Data provider for it_disables_plugins_on_frontend
 	 */
-	public function dp_it_disables_plugins_on_frontend() {
+	public function dp_it_disables_plugins_on_frontend(): array {
 		return [
 			'not an array'                   => [ 'some string', null, 'some string' ],
 			'empty array'                    => [ [], null, [] ],
@@ -307,9 +305,9 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * It disables plugins on backend
 	 *
-	 * @param array $plugins  Plugins.
-	 * @param array $filters  Filters.
-	 * @param array $expected Expected result.
+	 * @param array|mixed $plugins  Plugins.
+	 * @param array|mixed $filters  $filters  Filters.
+	 * @param array|mixed $expected Expected result.
 	 *
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_backend
@@ -341,7 +339,7 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * Data provider for it_disables_plugins_on_backend
 	 */
-	public function dp_it_disables_plugins_on_backend() {
+	public function dp_it_disables_plugins_on_backend(): array {
 		return [
 			'not an array'                   => [ 'some string', null, 'some string' ],
 			'empty array'                    => [ [], null, [] ],
@@ -484,9 +482,9 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * It disables plugins on ajax
 	 *
-	 * @param array $plugins  Plugins.
-	 * @param array $filters  Filters.
-	 * @param array $expected Expected result.
+	 * @param array|mixed $plugins  Plugins.
+	 * @param array|mixed $filters  $filters  Filters.
+	 * @param array|mixed $expected Expected result.
 	 *
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_ajax
@@ -514,7 +512,7 @@ class MainTest extends KAGGTestCase {
 
 		FunctionMocker::replace(
 			'filter_input',
-			static function( $type, $var_name, $filter ) use ( $action ) {
+			static function ( $type, $var_name, $filter ) use ( $action ) {
 				if ( INPUT_POST === $type && 'action' === $var_name && FILTER_SANITIZE_FULL_SPECIAL_CHARS === $filter ) {
 					return $action;
 				}
@@ -535,7 +533,7 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * Data provider for it_disables_plugins_on_ajax
 	 */
-	public function dp_it_disables_plugins_on_ajax() {
+	public function dp_it_disables_plugins_on_ajax(): array {
 		return [
 			'not an array'                   => [ 'some string', null, 'some string' ],
 			'empty array'                    => [ [], null, [] ],
@@ -611,9 +609,9 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * It disables plugins on WooCommerce ajax
 	 *
-	 * @param array $plugins  Plugins.
-	 * @param array $filters  Filters.
-	 * @param array $expected Expected result.
+	 * @param array|mixed $plugins  Plugins.
+	 * @param array|mixed $filters  $filters  Filters.
+	 * @param array|mixed $expected Expected result.
 	 *
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_ajax
@@ -640,7 +638,7 @@ class MainTest extends KAGGTestCase {
 
 		FunctionMocker::replace(
 			'filter_input',
-			static function( $type, $var_name, $filter ) use ( $action ) {
+			static function ( $type, $var_name, $filter ) use ( $action ) {
 				if ( INPUT_GET === $type && 'wc-ajax' === $var_name && FILTER_SANITIZE_FULL_SPECIAL_CHARS === $filter ) {
 					return $action;
 				}
@@ -660,9 +658,9 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * It disables plugins on rest, case 1
 	 *
-	 * @param array $plugins  Plugins.
-	 * @param array $filters  Filters.
-	 * @param array $expected Expected result.
+	 * @param array|mixed $plugins  Plugins.
+	 * @param array|mixed $filters  $filters  Filters.
+	 * @param array|mixed $expected Expected result.
 	 *
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_rest
@@ -708,9 +706,9 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * It disables plugins on rest, cases 2-4
 	 *
-	 * @param array $plugins  Plugins.
-	 * @param array $filters  Filters.
-	 * @param array $expected Expected result.
+	 * @param array|mixed $plugins  Plugins.
+	 * @param array|mixed $filters  $filters  Filters.
+	 * @param array|mixed $expected Expected result.
 	 *
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_rest
@@ -759,7 +757,7 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * Data provider for it_disables_plugins_on_rest
 	 */
-	public function dp_it_disables_plugins_on_rest() {
+	public function dp_it_disables_plugins_on_rest(): array {
 		return [
 			'not an array'                   => [ 'some string', null, 'some string' ],
 			'empty array'                    => [ [], null, [] ],
@@ -835,9 +833,9 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * It disables plugins on cli
 	 *
-	 * @param array $plugins  Plugins.
-	 * @param array $filters  Filters.
-	 * @param array $expected Expected result.
+	 * @param array|mixed $plugins  Plugins.
+	 * @param array|mixed $filters  $filters  Filters.
+	 * @param array|mixed $expected Expected result.
 	 *
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_cli
@@ -880,7 +878,7 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * Data provider for it_disables_plugins_on_cli
 	 */
-	public function dp_it_disables_plugins_on_cli() {
+	public function dp_it_disables_plugins_on_cli(): array {
 		return [
 			'not an array'                   => [ 'some string', null, 'some string' ],
 			'empty array'                    => [ [], null, [] ],
@@ -956,13 +954,15 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * It disables plugins on xml-rpc
 	 *
-	 * @param array $plugins  Plugins.
-	 * @param array $filters  Filters.
-	 * @param array $expected Expected result.
+	 * @param array|mixed $plugins  Plugins.
+	 * @param array|mixed $filters  $filters  Filters.
+	 * @param array|mixed $expected Expected result.
 	 *
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_xml_rpc
-	 * @noinspection        RequiredAttributes
+	 * @noinspection        RequiredAttributes RequiredAttributes.
+	 * @noinspection        XmlDeprecatedElement XmlDeprecatedElement.
+	 * @noinspection        HtmlDeprecatedTag HtmlDeprecatedTag.
 	 */
 	public function it_disables_plugins_on_xml_rpc( $plugins, $filters, $expected ) {
 		$http_raw_post_data = '
@@ -1029,7 +1029,7 @@ class MainTest extends KAGGTestCase {
 	/**
 	 * Data provider for it_disables_plugins_on_xml_rpc
 	 */
-	public function dp_it_disables_plugins_on_xml_rpc() {
+	public function dp_it_disables_plugins_on_xml_rpc(): array {
 		return [
 			'not an array'                   => [ 'some string', null, 'some string' ],
 			'empty array'                    => [ [], null, [] ],
@@ -1112,7 +1112,7 @@ class MainTest extends KAGGTestCase {
 	 * @dataProvider dp_it_gets_rest_route
 	 * @throws ReflectionException Reflection exception.
 	 */
-	public function it_gets_rest_route( $current_path, $expected ) {
+	public function it_gets_rest_route( string $current_path, string $expected ) {
 		$current_url = 'https://test.test' . $current_path;
 
 		$rest_path = '/wp-json';
@@ -1123,8 +1123,8 @@ class MainTest extends KAGGTestCase {
 
 		WP_Mock::userFunction( 'rest_url' )->andReturn( $rest_url );
 		WP_Mock::userFunction( 'trailingslashit' )->andReturnUsing(
-			function ( $string ) {
-				return rtrim( $string, '/' ) . '/';
+			function ( $value ) {
+				return rtrim( $value, '/' ) . '/';
 			}
 		);
 		WP_Mock::userFunction( 'wp_parse_url' )->with( $rest_url, PHP_URL_PATH )->andReturn( $rest_path );
@@ -1141,7 +1141,7 @@ class MainTest extends KAGGTestCase {
 	 *
 	 * @return array
 	 */
-	public function dp_it_gets_rest_route() {
+	public function dp_it_gets_rest_route(): array {
 		return [
 			'rest request' => [ '/wp-json/wp/v2/posts', '/wp/v2/posts' ],
 			'some request' => [ '/some-request', '' ],

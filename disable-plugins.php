@@ -13,12 +13,15 @@
  * @package kagg/disable_plugins
  */
 
+// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+/** @noinspection PhpIncludeInspection PhpIncludeInspection */
+
 namespace KAGG\DisablePlugins;
 
 define( 'KAGG_DISABLE_PLUGINS_PATH', __DIR__ . '/disable-plugins' );
 
 /**
- * Init plugin class on plugin load.
+ * Init plugin class on the plugin load.
  */
 require_once KAGG_DISABLE_PLUGINS_PATH . '/vendor/autoload.php';
 

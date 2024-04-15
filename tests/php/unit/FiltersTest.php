@@ -47,7 +47,7 @@ class FiltersTest extends KAGGTestCase {
 		$subject = $this->get_subject();
 		$this->check_filters( $subject->get_frontend_filters() );
 
-		// Check that at second time we have the same result.
+		// Check that the second time we have the same result.
 		$this->check_filters( $subject->get_frontend_filters() );
 	}
 
@@ -96,7 +96,7 @@ class FiltersTest extends KAGGTestCase {
 	 *
 	 * @return Filters
 	 */
-	private function get_subject() {
+	private function get_subject(): Filters {
 		return new Filters( PLUGIN_TESTS_DIR . '/tests/filters.test.json' );
 	}
 
@@ -105,10 +105,9 @@ class FiltersTest extends KAGGTestCase {
 	 *
 	 * @param array $filters Filters.
 	 *
-	 * @noinspection PhpUnitTestsInspection
+	 * @noinspection PhpUnitTestsInspection PhpUnitTestsInspection.
 	 */
-	private function check_filters( $filters ) {
-		$this->assertTrue( is_array( $filters ) );
+	private function check_filters( array $filters ) {
 		foreach ( $filters as $filter ) {
 			$this->assertTrue( is_array( $filter ) );
 			$this->assertArrayHasKey( 'patterns', $filter );
