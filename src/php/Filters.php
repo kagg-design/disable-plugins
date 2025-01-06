@@ -15,11 +15,11 @@ namespace KAGG\DisablePlugins;
 class Filters {
 
 	/**
-	 * Name of the file containing filters in json format
+	 * Name of the file containing filters in JSON format
 	 *
 	 * @var string
 	 */
-	private $filters_filename = KAGG_DISABLE_PLUGINS_PATH . '/../filters.json';
+	private $filters_filename;
 
 	/**
 	 * All filters
@@ -36,7 +36,11 @@ class Filters {
 	public function __construct( string $filters_filename = '' ) {
 		if ( $filters_filename ) {
 			$this->filters_filename = $filters_filename;
+		} else {
+			$this->filters_filename = WPMU_PLUGIN_DIR . '/filters.json';
 		}
+
+		$this->filters_filename = wp_normalize_path( $this->filters_filename );
 	}
 
 	/**
@@ -118,7 +122,7 @@ class Filters {
 	}
 
 	/**
-	 * Load a full set of filters from json file
+	 * Load a full set of filters from JSON file
 	 *
 	 * @return array|false|mixed|object|string
 	 */

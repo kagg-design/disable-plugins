@@ -8,6 +8,7 @@
 namespace KAGG\DisablePlugins\Tests\Unit;
 
 use KAGG\DisablePlugins\Filters;
+use WP_Mock;
 
 /**
  * Class Test_Filters
@@ -15,6 +16,17 @@ use KAGG\DisablePlugins\Filters;
  * @group filters
  */
 class FiltersTest extends KAGGTestCase {
+
+	/**
+	 * Set up tests.
+	 *
+	 * @return void
+	 */
+	public function setUp(): void {
+		parent::setUp();
+
+		WP_Mock::passthruFunction( 'wp_normalize_path' );
+	}
 
 	/**
 	 * Test get_frontend_filters() with wrong filter filename.
