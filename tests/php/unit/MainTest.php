@@ -27,11 +27,8 @@ class MainTest extends KAGGTestCase {
 
 	/**
 	 * Finalise test
-	 *
-	 * @noinspection PhpLanguageLevelInspection PhpLanguageLevelInspection.
-	 * @noinspection PhpUndefinedClassInspection PhpUndefinedClassInspection.
 	 */
-	public function tearDown(): void { // phpcs:ignore PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.voidFound
+	public function tearDown(): void {
 		unset(
 			$_SERVER['REQUEST_URI'],
 			// phpcs:disable WordPress.Security.NonceVerification.Recommended
@@ -53,7 +50,7 @@ class MainTest extends KAGGTestCase {
 	 * @test
 	 * @noinspection PhpUndefinedMethodInspection PhpUndefinedMethodInspection.
 	 */
-	public function it_inits() {
+	public function it_inits(): void {
 		$subject = Mockery::mock( Main::class )->makePartial();
 		$subject->shouldReceive( 'add_hooks' )->once();
 
@@ -67,7 +64,7 @@ class MainTest extends KAGGTestCase {
 	 *
 	 * @test
 	 */
-	public function it_adds_and_removes_hooks() {
+	public function it_adds_and_removes_hooks(): void {
 		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
@@ -93,7 +90,7 @@ class MainTest extends KAGGTestCase {
 	 *
 	 * @test
 	 */
-	public function it_removes_plugin_filters() {
+	public function it_removes_plugin_filters(): void {
 		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
@@ -107,7 +104,7 @@ class MainTest extends KAGGTestCase {
 	 *
 	 * @test
 	 */
-	public function it_disables_plugins_saved_in_cache() {
+	public function it_disables_plugins_saved_in_cache(): void {
 		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
@@ -125,7 +122,7 @@ class MainTest extends KAGGTestCase {
 	 *
 	 * @test
 	 */
-	public function it_does_nothing_on_frontend_if_no_server_uri() {
+	public function it_does_nothing_on_frontend_if_no_server_uri(): void {
 		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
@@ -152,7 +149,7 @@ class MainTest extends KAGGTestCase {
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_frontend
 	 */
-	public function it_disables_plugins_on_frontend( $plugins, $filters, $expected ) {
+	public function it_disables_plugins_on_frontend( $plugins, $filters, $expected ): void {
 		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
 		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
@@ -285,7 +282,7 @@ class MainTest extends KAGGTestCase {
 	 *
 	 * @test
 	 */
-	public function it_does_nothing_on_backend_if_no_server_uri() {
+	public function it_does_nothing_on_backend_if_no_server_uri(): void {
 		$filters_instance = Mockery::mock( Filters::class );
 		$subject          = new Main( $filters_instance );
 
@@ -312,7 +309,7 @@ class MainTest extends KAGGTestCase {
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_backend
 	 */
-	public function it_disables_plugins_on_backend( $plugins, $filters, $expected ) {
+	public function it_disables_plugins_on_backend( $plugins, $filters, $expected ): void {
 		WP_Mock::userFunction( 'wp_json_encode' )->andReturn( '' );
 		WP_Mock::userFunction( 'wp_cache_get' )->andReturn( false );
 		WP_Mock::userFunction( 'wp_doing_ajax' )->andReturn( false );
@@ -436,7 +433,7 @@ class MainTest extends KAGGTestCase {
 	 *
 	 * @test
 	 */
-	public function it_does_nothing_on_ajax_if_referer_is_admin_url() {
+	public function it_does_nothing_on_ajax_if_referer_is_admin_url(): void {
 		$referer = 'https://www.example.com/wp-admin/';
 		$action  = 'my-action';
 
@@ -489,7 +486,7 @@ class MainTest extends KAGGTestCase {
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_ajax
 	 */
-	public function it_disables_plugins_on_ajax( $plugins, $filters, $expected ) {
+	public function it_disables_plugins_on_ajax( $plugins, $filters, $expected ): void {
 		$referer = 'https://www.example.com/some-page/';
 
 		$filters_instance = Mockery::mock( Filters::class );
@@ -616,7 +613,7 @@ class MainTest extends KAGGTestCase {
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_ajax
 	 */
-	public function it_disables_plugins_on_wc_ajax( $plugins, $filters, $expected ) {
+	public function it_disables_plugins_on_wc_ajax( $plugins, $filters, $expected ): void {
 		$referer = 'https://www.example.com/some-page/';
 
 		$filters_instance = Mockery::mock( Filters::class );
@@ -665,7 +662,7 @@ class MainTest extends KAGGTestCase {
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_rest
 	 */
-	public function it_disables_plugins_on_rest_case1( $plugins, $filters, $expected ) {
+	public function it_disables_plugins_on_rest_case1( $plugins, $filters, $expected ): void {
 		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_rest_filters' )->andReturn( $filters );
 
@@ -713,7 +710,7 @@ class MainTest extends KAGGTestCase {
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_rest
 	 */
-	public function it_disables_plugins_on_rest_case2_4( $plugins, $filters, $expected ) {
+	public function it_disables_plugins_on_rest_case2_4( $plugins, $filters, $expected ): void {
 		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_rest_filters' )->andReturn( $filters );
 
@@ -840,7 +837,7 @@ class MainTest extends KAGGTestCase {
 	 * @test
 	 * @dataProvider        dp_it_disables_plugins_on_cli
 	 */
-	public function it_disables_plugins_on_cli( $plugins, $filters, $expected ) {
+	public function it_disables_plugins_on_cli( $plugins, $filters, $expected ): void {
 		$filters_instance = Mockery::mock( Filters::class );
 		$filters_instance->shouldReceive( 'get_cli_filters' )->andReturn( $filters );
 
@@ -964,7 +961,7 @@ class MainTest extends KAGGTestCase {
 	 * @noinspection        XmlDeprecatedElement XmlDeprecatedElement.
 	 * @noinspection        HtmlDeprecatedTag HtmlDeprecatedTag.
 	 */
-	public function it_disables_plugins_on_xml_rpc( $plugins, $filters, $expected ) {
+	public function it_disables_plugins_on_xml_rpc( $plugins, $filters, $expected ): void {
 		$http_raw_post_data = '
 ';
 
@@ -1112,7 +1109,7 @@ class MainTest extends KAGGTestCase {
 	 * @dataProvider dp_it_gets_rest_route
 	 * @throws ReflectionException Reflection exception.
 	 */
-	public function it_gets_rest_route( string $current_path, string $expected ) {
+	public function it_gets_rest_route( string $current_path, string $expected ): void {
 		$current_url = 'https://test.test' . $current_path;
 
 		$rest_path = '/wp-json';

@@ -6,14 +6,13 @@
 		 convertNoticesToExceptions="true"
 		 convertWarningsToExceptions="true"
 		 beStrictAboutTestsThatDoNotTestAnything="false"
-		 xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd">
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd">
 	<coverage>
 		<include>
 			<directory suffix=".php">.</directory>
 		</include>
 		<exclude>
 			<directory>.github</directory>
-			<directory>bin</directory>
 			<directory>tests</directory>
 			<directory>vendor</directory>
 		</exclude>

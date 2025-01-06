@@ -19,23 +19,23 @@ class FiltersTest extends KAGGTestCase {
 	/**
 	 * Test get_frontend_filters() with wrong filter filename.
 	 */
-	public function test_get_frontend_filters_with_wrong_filter_filename() {
+	public function test_get_frontend_filters_with_wrong_filter_filename(): void {
 		$subject = new Filters( PLUGIN_TESTS_DIR . '/non.existing.json' );
 		self::assertSame( [], $subject->get_frontend_filters() );
 	}
 
 	/**
-	 * Test get_frontend_filters() with empty filter file.
+	 * Test get_frontend_filters() with an empty filter file.
 	 */
-	public function test_get_frontend_filters_with_empty_filter_file() {
+	public function test_get_frontend_filters_with_empty_filter_file(): void {
 		$subject = new Filters( PLUGIN_TESTS_DIR . '/tests/empty.file.test.json' );
 		self::assertSame( [], $subject->get_frontend_filters() );
 	}
 
 	/**
-	 * Test get_frontend_filters() with empty json.
+	 * Test get_frontend_filters() with empty JSON.
 	 */
-	public function test_get_frontend_filters_with_empty_json() {
+	public function test_get_frontend_filters_with_empty_json(): void {
 		$subject = new Filters( PLUGIN_TESTS_DIR . '/tests/empty.json.test.json' );
 		self::assertSame( [], $subject->get_frontend_filters() );
 	}
@@ -43,7 +43,7 @@ class FiltersTest extends KAGGTestCase {
 	/**
 	 * Test get_frontend_filters().
 	 */
-	public function test_get_frontend_filters() {
+	public function test_get_frontend_filters(): void {
 		$subject = $this->get_subject();
 		$this->check_filters( $subject->get_frontend_filters() );
 
@@ -54,7 +54,7 @@ class FiltersTest extends KAGGTestCase {
 	/**
 	 * Test get_backend_filters().
 	 */
-	public function test_get_backend_filters() {
+	public function test_get_backend_filters(): void {
 		$subject = $this->get_subject();
 		$this->check_filters( $subject->get_backend_filters() );
 	}
@@ -62,7 +62,7 @@ class FiltersTest extends KAGGTestCase {
 	/**
 	 * Test get_ajax_filters().
 	 */
-	public function test_get_ajax_filters() {
+	public function test_get_ajax_filters(): void {
 		$subject = $this->get_subject();
 		$this->check_filters( $subject->get_ajax_filters() );
 	}
@@ -70,7 +70,7 @@ class FiltersTest extends KAGGTestCase {
 	/**
 	 * Test get_rest_filters().
 	 */
-	public function test_get_rest_filters() {
+	public function test_get_rest_filters(): void {
 		$subject = $this->get_subject();
 		$this->check_filters( $subject->get_rest_filters() );
 	}
@@ -78,7 +78,7 @@ class FiltersTest extends KAGGTestCase {
 	/**
 	 * Test get_cli_filters().
 	 */
-	public function test_get_cli_filters() {
+	public function test_get_cli_filters(): void {
 		$subject = $this->get_subject();
 		$this->check_filters( $subject->get_cli_filters() );
 	}
@@ -86,7 +86,7 @@ class FiltersTest extends KAGGTestCase {
 	/**
 	 * Test get_xml_rpc_filters().
 	 */
-	public function test_get_xml_rpc_filters() {
+	public function test_get_xml_rpc_filters(): void {
 		$subject = $this->get_subject();
 		$this->check_filters( $subject->get_xml_rpc_filters() );
 	}
@@ -107,7 +107,7 @@ class FiltersTest extends KAGGTestCase {
 	 *
 	 * @noinspection PhpUnitTestsInspection PhpUnitTestsInspection.
 	 */
-	private function check_filters( array $filters ) {
+	private function check_filters( array $filters ): void {
 		foreach ( $filters as $filter ) {
 			$this->assertTrue( is_array( $filter ) );
 			$this->assertArrayHasKey( 'patterns', $filter );

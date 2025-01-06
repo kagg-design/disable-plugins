@@ -72,7 +72,7 @@ abstract class KAGGTestCase extends TestCase {
 	 *
 	 * @throws ReflectionException Reflection exception.
 	 */
-	protected function set_protected_property( $subject, string $property_name, $value ) {
+	protected function set_protected_property( $subject, string $property_name, $value ): void {
 		$reflection_class = new ReflectionClass( $subject );
 
 		$property = $reflection_class->getProperty( $property_name );

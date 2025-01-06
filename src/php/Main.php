@@ -21,12 +21,12 @@ class Main {
 	 *
 	 * @var string
 	 */
-	const CACHE_GROUP = 'kagg_disable_plugins';
+	public const CACHE_GROUP = 'kagg_disable_plugins';
 
 	/**
 	 * WooCommerce ajax $_GET argument.
 	 */
-	const WC_AJAX = 'wc-ajax';
+	public const WC_AJAX = 'wc-ajax';
 
 	/**
 	 * Instance of class Filters, providing plugin filters
@@ -54,7 +54,7 @@ class Main {
 	/**
 	 * Init plugin
 	 */
-	public function init() {
+	public function init(): void {
 		wp_cache_add_non_persistent_groups( [ self::CACHE_GROUP ] );
 
 		$this->add_hooks();
@@ -63,7 +63,7 @@ class Main {
 	/**
 	 * Add hooks
 	 */
-	public function add_hooks() {
+	public function add_hooks(): void {
 		add_filter( 'option_active_plugins', [ $this, 'disable' ], - PHP_INT_MAX );
 
 		add_filter( 'option_hack_file', [ $this, 'remove_plugin_filters' ], - PHP_INT_MAX );
@@ -113,7 +113,7 @@ class Main {
 	/**
 	 * Remove plugin filters
 	 */
-	public function remove_plugin_filters() {
+	public function remove_plugin_filters(): void {
 		remove_filter( 'option_active_plugins', [ $this, 'disable' ], - PHP_INT_MAX );
 	}
 
@@ -230,7 +230,7 @@ class Main {
 	}
 
 	/**
-	 * Get subset of plugins
+	 * Get a subset of plugins
 	 *
 	 * @param array  $plugins         Plugins.
 	 * @param string $current_pattern Current pattern.
